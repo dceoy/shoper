@@ -166,7 +166,7 @@ class ShellOperator:
                         p.args, p.returncode
                     )
                 )
-            raise subprocess.CalledProcessError(
+            raise subprocess.SubprocessError(
                 '{0} process{1} returned non-zero exit status{1}'.format(
                     len(p_failed), ('es' if len(p_failed) > 1 else '')
                 )
