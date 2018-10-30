@@ -7,7 +7,7 @@ import sys
 import time
 
 
-class ShellOperator:
+class ShellOperator(object):
     def __init__(self, log_txt=None, quiet=False, clear_log_txt=False,
                  logger=None, executable='/bin/bash'):
         self.logger = logger or logging.getLogger(__name__)
