@@ -2,6 +2,7 @@
 
 import logging
 import os
+from pprint import pformat
 import subprocess
 import sys
 import time
@@ -89,7 +90,7 @@ class ShellOperator(object):
                 )
             self.open_proc_list = []
         else:
-            pass
+            self.logger.debug('No backgroud process.')
 
     @staticmethod
     def _args2list(args):
@@ -158,18 +159,11 @@ class ShellOperator(object):
 
     def _validate_results(self, procs, output_files=None,
                           output_validator=None, remove_if_failed=True):
-        p_failed = [p for p in procs if p.returncode != 0]
+        p_failed = [vars(p) for p in procs if p.returncode != 0]
         if p_failed:
-            for p in p_failed:
-                self.logger.error(
-                    'Command \'{0}\' returned exit status {1}'.format(
-                        p.args, p.returncode
-                    )
-                )
             raise subprocess.SubprocessError(
-                '{0} process{1} returned non-zero exit status{1}'.format(
-                    len(p_failed), ('es' if len(p_failed) > 1 else '')
-                )
+                'Commands returned non-zero exit statuses:' + os.linesep +
+                pformat(p_failed)
             )
         elif output_files:
             self._validate_outputs(
