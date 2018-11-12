@@ -1,0 +1,12 @@
+---
+version: '3'
+
+services:
+  pandna:
+    container_name: shopy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dceoy/shopy:latest
+    entrypoint:
+      - python

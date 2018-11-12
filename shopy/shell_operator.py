@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# Simple shell operator module for Python
+# https://github.com/dceoy/shopy
 
 import logging
 import os
@@ -10,11 +13,12 @@ import time
 
 class ShellOperator(object):
     def __init__(self, log_txt=None, quiet=False, clear_log_txt=False,
-                 logger=None, executable='/bin/bash'):
+                 logger=None, print_command=True, executable='/bin/bash'):
         self.logger = logger or logging.getLogger(__name__)
         self.executable = executable
         self.log_txt = log_txt
         self.quiet = quiet
+        self.print_command = print_command
         self.open_proc_list = []
         if clear_log_txt:
             self._remove_existing_files(log_txt)
@@ -106,7 +110,7 @@ class ShellOperator(object):
     def _popen(self, arg, prompt, cwd=None):
         self.logger.debug('{0} <= {1}'.format(self.executable, arg))
         command_line = prompt + arg + os.linesep
-        sys.stdout.write(command_line)
+        self._print_line(command_line, stdout=self.print_command)
         if self.log_txt:
             if os.path.exists(self.log_txt):
                 with open(self.log_txt, 'a') as f:
@@ -125,7 +129,7 @@ class ShellOperator(object):
     def _shell_c(self, arg, prompt, cwd=None):
         self.logger.debug('{0} <= {1}'.format(self.executable, arg))
         command_line = prompt + arg + os.linesep
-        sys.stdout.write(command_line)
+        self._print_line(command_line, stdout=self.print_command)
         if self.log_txt:
             if os.path.exists(self.log_txt):
                 with open(self.log_txt, 'a') as f:
@@ -156,6 +160,12 @@ class ShellOperator(object):
             p.wait()
         [f.close() for f in [fw, fr] if f]
         return p
+
+    def _print_line(self, strings, stdout=True):
+        if stdout:
+            sys.stdout.write(strings)
+        else:
+            self.logger.info(strings)
 
     def _validate_results(self, procs, output_files=None,
                           output_validator=None, remove_if_failed=True):
