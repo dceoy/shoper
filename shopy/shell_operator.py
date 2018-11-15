@@ -42,13 +42,13 @@ class ShellOperator(object):
             p: os.path.exists(p) for p in self._args2list(output_files)
         }
         self.logger.debug('output_found: {}'.format(output_found))
-        if not all(input_found.values()):
+        if input_files and not all(input_found.values()):
             raise FileNotFoundError(
                 'input not found: {}'.format(
                     ', '.join([p for p, s in input_found.items() if not s])
                 )
             )
-        elif all(output_found.values()) and skip_if_exist:
+        elif output_files and all(output_found.values()) and skip_if_exist:
             self.logger.debug('skipped args: {}'.format(args))
         else:
             if remove_previous:
