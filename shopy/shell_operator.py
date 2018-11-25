@@ -109,15 +109,15 @@ class ShellOperator(object):
 
     def _popen(self, arg, prompt, cwd=None):
         self.logger.debug('{0} <= {1}'.format(self.executable, arg))
-        command_line = prompt + arg + os.linesep
+        command_line = prompt + arg
         self._print_line(command_line, stdout=self.print_command)
         if self.log_txt:
             if os.path.exists(self.log_txt):
                 with open(self.log_txt, 'a') as f:
-                    f.write(os.linesep + command_line)
+                    f.write(os.linesep + command_line + os.linesep)
             else:
                 with open(self.log_txt, 'w') as f:
-                    f.write(command_line)
+                    f.write(command_line + os.linesep)
             fo = open(self.log_txt, 'a')
         else:
             fo = open('/dev/null', 'w')
@@ -128,15 +128,15 @@ class ShellOperator(object):
 
     def _shell_c(self, arg, prompt, cwd=None):
         self.logger.debug('{0} <= {1}'.format(self.executable, arg))
-        command_line = prompt + arg + os.linesep
+        command_line = prompt + arg
         self._print_line(command_line, stdout=self.print_command)
         if self.log_txt:
             if os.path.exists(self.log_txt):
                 with open(self.log_txt, 'a') as f:
-                    f.write(os.linesep + command_line)
+                    f.write(os.linesep + command_line + os.linesep)
             else:
                 with open(self.log_txt, 'w') as f:
-                    f.write(command_line)
+                    f.write(command_line + os.linesep)
             fw = open(self.log_txt, 'a')
         elif self.quiet:
             fw = open('/dev/null', 'w')
@@ -163,7 +163,7 @@ class ShellOperator(object):
 
     def _print_line(self, strings, stdout=True):
         if stdout:
-            sys.stdout.write(strings)
+            print(strings, flush=True)
         else:
             self.logger.info(strings)
 
