@@ -154,8 +154,10 @@ class ShellOperator(object):
         if fr:
             while p.poll() is None:
                 sys.stdout.write(fr.read())
+                sys.stdout.flush()
                 time.sleep(0.1)
             sys.stdout.write(fr.read())
+            sys.stdout.flush()
         else:
             p.wait()
         [f.close() for f in [fw, fr] if f]
