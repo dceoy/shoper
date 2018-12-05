@@ -14,12 +14,12 @@ import time
 class ShellOperator(object):
     def __init__(self, log_txt=None, quiet=False, clear_log_txt=False,
                  logger=None, print_command=True, executable='/bin/bash'):
-        self.logger = logger or logging.getLogger(__name__)
-        self.executable = executable
-        self.log_txt = log_txt
-        self.quiet = quiet
-        self.print_command = print_command
-        self.open_proc_list = []
+        self.__logger = logger or logging.getLogger(__name__)
+        self.__executable = executable
+        self.__log_txt = log_txt
+        self.__quiet = quiet
+        self.__print_command = print_command
+        self.__open_proc_list = []
         if clear_log_txt:
             self._remove_existing_files(log_txt)
 
@@ -27,21 +27,21 @@ class ShellOperator(object):
         for p in self._args2list(paths):
             if os.path.exists(p):
                 os.remove(p)
-                self.logger.debug('file removed: {}'.format(p))
+                self.__logger.debug('file removed: {}'.format(p))
 
     def run(self, args, input_files=None, output_files=None,
             output_validator=None, cwd=None, prompt=None, in_background=False,
             remove_if_failed=True, remove_previous=False, skip_if_exist=True):
-        self.logger.debug('input_files: {}'.format(input_files))
+        self.__logger.debug('input_files: {}'.format(input_files))
         input_found = {
             p: os.path.exists(p) for p in self._args2list(input_files)
         }
-        self.logger.debug('input_found: {}'.format(input_found))
-        self.logger.debug('output_files: {}'.format(output_files))
+        self.__logger.debug('input_found: {}'.format(input_found))
+        self.__logger.debug('output_files: {}'.format(output_files))
         output_found = {
             p: os.path.exists(p) for p in self._args2list(output_files)
         }
-        self.logger.debug('output_found: {}'.format(output_found))
+        self.__logger.debug('output_found: {}'.format(output_found))
         if input_files and not all(input_found.values()):
             raise FileNotFoundError(
                 'input not found: {}'.format(
@@ -49,13 +49,13 @@ class ShellOperator(object):
                 )
             )
         elif output_files and all(output_found.values()) and skip_if_exist:
-            self.logger.debug('skipped args: {}'.format(args))
+            self.__logger.debug('skipped args: {}'.format(args))
         else:
             if remove_previous:
                 self._remove_existing_files(output_files)
             pp = prompt or '[{}] $ '.format(cwd or os.getcwd())
             if in_background:
-                self.open_proc_list.append({
+                self.__open_proc_list.append({
                     'output_files': output_files,
                     'output_validator': output_validator,
                     'remove_if_failed': remove_if_failed,
@@ -82,8 +82,8 @@ class ShellOperator(object):
                     )
 
     def wait(self):
-        if self.open_proc_list:
-            for d in self.open_proc_list:
+        if self.__open_proc_list:
+            for d in self.__open_proc_list:
                 for p in d['procs']:
                     p.wait()
                     [f.close() for f in [p.stdout, p.stderr] if f]
@@ -92,9 +92,9 @@ class ShellOperator(object):
                     output_validator=d['output_validator'],
                     remove_if_failed=d['remove_if_failed']
                 )
-            self.open_proc_list = []
+            self.__open_proc_list = []
         else:
-            self.logger.debug('No backgroud process.')
+            self.__logger.debug('No backgroud process.')
 
     @staticmethod
     def _args2list(args):
@@ -108,47 +108,47 @@ class ShellOperator(object):
             return [args]
 
     def _popen(self, arg, prompt, cwd=None):
-        self.logger.debug('{0} <= {1}'.format(self.executable, arg))
+        self.__logger.debug('{0} <= {1}'.format(self.__executable, arg))
         command_line = prompt + arg
-        self._print_line(command_line, stdout=self.print_command)
-        if self.log_txt:
-            if os.path.exists(self.log_txt):
-                with open(self.log_txt, 'a') as f:
+        self._print_line(command_line, stdout=self.__print_command)
+        if self.__log_txt:
+            if os.path.exists(self.__log_txt):
+                with open(self.__log_txt, 'a') as f:
                     f.write(os.linesep + command_line + os.linesep)
             else:
-                with open(self.log_txt, 'w') as f:
+                with open(self.__log_txt, 'w') as f:
                     f.write(command_line + os.linesep)
-            fo = open(self.log_txt, 'a')
+            fo = open(self.__log_txt, 'a')
         else:
             fo = open('/dev/null', 'w')
         return subprocess.Popen(
-            arg, executable=self.executable, stdout=fo, stderr=fo,
+            arg, executable=self.__executable, stdout=fo, stderr=fo,
             shell=True, cwd=cwd
         )
 
     def _shell_c(self, arg, prompt, cwd=None):
-        self.logger.debug('{0} <= {1}'.format(self.executable, arg))
+        self.__logger.debug('{0} <= {1}'.format(self.__executable, arg))
         command_line = prompt + arg
-        self._print_line(command_line, stdout=self.print_command)
-        if self.log_txt:
-            if os.path.exists(self.log_txt):
-                with open(self.log_txt, 'a') as f:
+        self._print_line(command_line, stdout=self.__print_command)
+        if self.__log_txt:
+            if os.path.exists(self.__log_txt):
+                with open(self.__log_txt, 'a') as f:
                     f.write(os.linesep + command_line + os.linesep)
             else:
-                with open(self.log_txt, 'w') as f:
+                with open(self.__log_txt, 'w') as f:
                     f.write(command_line + os.linesep)
-            fw = open(self.log_txt, 'a')
-        elif self.quiet:
+            fw = open(self.__log_txt, 'a')
+        elif self.__quiet:
             fw = open('/dev/null', 'w')
         else:
             fw = None
-        if self.log_txt and not self.quiet:
-            fr = open(self.log_txt, 'r')
+        if self.__log_txt and not self.__quiet:
+            fr = open(self.__log_txt, 'r')
             fr.read()
         else:
             fr = None
         p = subprocess.Popen(
-            arg, executable=self.executable, stdout=fw, stderr=fw,
+            arg, executable=self.__executable, stdout=fw, stderr=fw,
             shell=True, cwd=cwd
         )
         if fr:
@@ -167,7 +167,7 @@ class ShellOperator(object):
         if stdout:
             print(strings, flush=True)
         else:
-            self.logger.info(strings)
+            self.__logger.info(strings)
 
     def _validate_results(self, procs, output_files=None,
                           output_validator=None, remove_if_failed=True):
@@ -205,10 +205,10 @@ class ShellOperator(object):
                     )
                 )
             else:
-                self.logger.debug(
+                self.__logger.debug(
                     'output validated with {0}: {1}'.format(
                         func, f_validated
                     )
                 )
         else:
-            self.logger.debug('output validated: {}'.format(f_found))
+            self.__logger.debug('output validated: {}'.format(f_found))
