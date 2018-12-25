@@ -7,7 +7,7 @@ from shopy import __version__
 setup(
     name='shopy',
     version=__version__,
-    description='Pandas-based Data Handlers for DNA-sequencing',
+    description='Simple shell operator module',
     packages=find_packages(),
     author='Daichi Narushima',
     author_email='dnarsil+github@gmail.com',

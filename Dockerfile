@@ -12,6 +12,6 @@ RUN set -e \
 
 RUN set -e \
       && pip install -U --no-cache-dir pip /tmp/shopy \
-      && rm -rf /tmp/pandna
+      && rm -rf /tmp/shopy
 
 ENTRYPOINT ["python"]
