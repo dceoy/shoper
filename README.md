@@ -16,7 +16,7 @@ Example
 -------
 
 ```py
-from shell_operator import ShellOperator
+from shelloperator import ShellOperator
 
 
 sh = ShellOperator(log_txt='log.txt', executable='/bin/bash')
