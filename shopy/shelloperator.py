@@ -1,14 +1,14 @@
 #!/usr/bin/env python
-#
-# Simple shell operator module for Python
-# https://github.com/dceoy/shopy
+"""Simple shell operator module for Python.
+https://github.com/dceoy/shopy
+"""
 
 import logging
 import os
-from pprint import pformat
 import subprocess
 import sys
 import time
+from pprint import pformat
 
 
 class ShellOperator(object):
