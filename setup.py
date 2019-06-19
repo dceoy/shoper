@@ -4,7 +4,6 @@ from setuptools import find_packages, setup
 
 from shopy import __version__
 
-
 setup(
     name='shopy',
     version=__version__,
