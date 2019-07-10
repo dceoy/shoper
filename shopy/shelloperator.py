@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-"""Simple shell operator module for Python.
+"""
+Simple shell operator module for Python.
 https://github.com/dceoy/shopy
 """
 
@@ -12,6 +13,8 @@ from pprint import pformat
 
 
 class ShellOperator(object):
+    """Simple shell operator."""
+
     def __init__(self, log_txt=None, quiet=False, clear_log_txt=False,
                  logger=None, print_command=True, executable='/bin/bash'):
         self.__logger = logger or logging.getLogger(__name__)
