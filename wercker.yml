@@ -5,7 +5,7 @@ box:
 test:
   steps:
     - script:
-        name: Install shopy
+        name: Install shoper
         code: |
           pip install -U .
     - script:

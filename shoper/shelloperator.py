@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Simple shell operator module for Python.
-https://github.com/dceoy/shopy
+https://github.com/dceoy/shoper
 """
 
 import logging

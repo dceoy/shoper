@@ -2,20 +2,20 @@
 
 from setuptools import find_packages, setup
 
-from shopy import __version__
+from shoper import __version__
 
 with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
-    name='shopy',
+    name='shoper',
     version=__version__,
     author='Daichi Narushima',
     author_email='dnarsil+github@gmail.com',
     description='Simple shell operator module',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/dceoy/shopy',
+    url='https://github.com/dceoy/shoper',
     packages=find_packages(),
     include_package_data=True,
     classifiers=[

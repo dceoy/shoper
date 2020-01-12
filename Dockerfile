@@ -1,6 +1,6 @@
 FROM python:slim
 
-ADD . /tmp/shopy
+ADD . /tmp/shoper
 
 RUN set -e \
       && apt-get -y update \
@@ -11,7 +11,7 @@ RUN set -e \
       && rm -rf /var/lib/apt/lists/*
 
 RUN set -e \
-      && pip install -U --no-cache-dir pip /tmp/shopy \
-      && rm -rf /tmp/shopy
+      && pip install -U --no-cache-dir pip /tmp/shoper \
+      && rm -rf /tmp/shoper
 
 ENTRYPOINT ["python"]

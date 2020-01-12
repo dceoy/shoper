@@ -1,5 +1,5 @@
-shopy
-=====
+shoper
+======
 
 Simple shell operator module for Python
 
@@ -9,14 +9,14 @@ Installation
 ------------
 
 ```sh
-$ pip install -U shopy
+$ pip install -U shoper
 ```
 
 Example
 -------
 
 ```py
-from shopy.shelloperator import ShellOperator
+from shoper.shelloperator import ShellOperator
 
 
 sh = ShellOperator(log_txt='log.txt', executable='/bin/bash')
