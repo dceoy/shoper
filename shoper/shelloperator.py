@@ -9,6 +9,7 @@ import os
 import subprocess
 import sys
 import time
+from pathlib import Path
 from pprint import pformat
 
 
@@ -28,7 +29,7 @@ class ShellOperator(object):
 
     def _remove_existing_files(self, paths):
         for p in self._args2list(paths):
-            if os.path.exists(p):
+            if Path(p).exists():
                 os.remove(p)
                 self.__logger.debug('file removed: {}'.format(p))
 
@@ -37,12 +38,12 @@ class ShellOperator(object):
             remove_if_failed=True, remove_previous=False, skip_if_exist=True):
         self.__logger.debug('input_files: {}'.format(input_files))
         input_found = {
-            p: os.path.exists(p) for p in self._args2list(input_files)
+            p: Path(p).exists() for p in self._args2list(input_files)
         }
         self.__logger.debug('input_found: {}'.format(input_found))
         self.__logger.debug('output_files: {}'.format(output_files))
         output_found = {
-            p: os.path.exists(p) for p in self._args2list(output_files)
+            p: Path(p).exists() for p in self._args2list(output_files)
         }
         self.__logger.debug('output_found: {}'.format(output_found))
         if input_files and not all(input_found.values()):
@@ -115,7 +116,7 @@ class ShellOperator(object):
         command_line = prompt + arg
         self._print_line(command_line, stdout=self.__print_command)
         if self.__log_txt:
-            if os.path.exists(self.__log_txt):
+            if Path(self.__log_txt).exists():
                 with open(self.__log_txt, 'a') as f:
                     f.write(os.linesep + command_line + os.linesep)
             else:
@@ -134,7 +135,7 @@ class ShellOperator(object):
         command_line = prompt + arg
         self._print_line(command_line, stdout=self.__print_command)
         if self.__log_txt:
-            if os.path.exists(self.__log_txt):
+            if Path(self.__log_txt).exists():
                 with open(self.__log_txt, 'a') as f:
                     f.write(os.linesep + command_line + os.linesep)
             else:
@@ -188,7 +189,7 @@ class ShellOperator(object):
 
     def _validate_outputs(self, files, func=None, remove_if_failed=True):
         f_all = self._args2list(files)
-        f_found = {p for p in f_all if os.path.exists(p)}
+        f_found = {p for p in f_all if Path(p).exists()}
         f_not_found = set(f_all).difference(f_found)
         if f_not_found:
             if remove_if_failed and f_found:
