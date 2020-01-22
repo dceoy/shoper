@@ -69,21 +69,21 @@ class ShellOperator(object):
                     ]
                 })
             else:
-                try:
-                    procs = [
-                        self._shell_c(arg=a, prompt=pp, cwd=cwd)
-                        for a in self._args2list(args)
-                    ]
-                except subprocess.SubprocessError as e:
-                    if output_files and remove_if_failed:
-                        self._remove_existing_files(output_files)
-                    raise e
-                else:
-                    self._validate_results(
-                        procs=procs, output_files=output_files,
-                        output_validator=output_validator,
-                        remove_if_failed=remove_if_failed
-                    )
+                procs = list()
+                for a in self._args2list(args):
+                    try:
+                        proc = self._shell_c(arg=a, prompt=pp, cwd=cwd)
+                    except subprocess.SubprocessError as e:
+                        if output_files and remove_if_failed:
+                            self._remove_existing_files(output_files)
+                        raise e
+                    else:
+                        procs.append(proc)
+                self._validate_results(
+                    procs=procs, output_files=output_files,
+                    output_validator=output_validator,
+                    remove_if_failed=remove_if_failed
+                )
 
     def wait(self):
         if self.__open_proc_list:
