@@ -73,7 +73,7 @@ class ShellOperator(object):
                         self._shell_c(arg=a, prompt=pp, cwd=cwd)
                         for a in self._args2list(args)
                     ]
-                except subprocess.CalledProcessError as e:
+                except subprocess.SubprocessError as e:
                     if output_files and remove_if_failed:
                         self._remove_existing_files(output_files)
                     raise e
