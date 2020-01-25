@@ -23,7 +23,7 @@ class ShellOperator(object):
         self.__log_txt = log_txt
         self.__quiet = quiet
         self.__print_command = print_command
-        self.__open_proc_list = []
+        self.__open_proc_list = list()
         if clear_log_txt:
             self._remove_existing_files(log_txt)
 
@@ -34,7 +34,7 @@ class ShellOperator(object):
                 self.__logger.debug('file removed: {}'.format(p))
 
     def run(self, args, input_files=None, output_files=None,
-            output_validator=None, cwd=None, prompt=None, asynchronicity=False,
+            output_validator=None, cwd=None, prompt=None, asynchronous=False,
             remove_if_failed=True, remove_previous=False, skip_if_exist=True,
             **popen_kwargs):
         self.__logger.debug('input_files: {}'.format(input_files))
@@ -59,7 +59,7 @@ class ShellOperator(object):
             if remove_previous:
                 self._remove_existing_files(output_files)
             pp = prompt or '[{}] $ '.format(cwd or os.getcwd())
-            if asynchronicity:
+            if asynchronous:
                 self.__open_proc_list.append({
                     'output_files': output_files,
                     'output_validator': output_validator,
@@ -99,7 +99,7 @@ class ShellOperator(object):
                     output_validator=d['output_validator'],
                     remove_if_failed=d['remove_if_failed']
                 )
-            self.__open_proc_list = []
+            self.__open_proc_list = list()
         else:
             self.__logger.debug('There is no process.')
 
@@ -107,12 +107,12 @@ class ShellOperator(object):
     def _args2list(args):
         if isinstance(args, list):
             return args
-        elif any([isinstance(args, c) for c in [tuple, set, dict]]):
-            return list(args)
-        elif args is None:
-            return []
-        else:
+        elif isinstance(args, str):
             return [args]
+        elif args is None:
+            return list()
+        else:
+            return list(args)
 
     def _popen(self, arg, prompt, cwd=None, **popen_kwargs):
         self.__logger.debug('{0} <= {1}'.format(self.__executable, arg))
