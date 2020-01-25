@@ -34,8 +34,9 @@ class ShellOperator(object):
                 self.__logger.debug('file removed: {}'.format(p))
 
     def run(self, args, input_files=None, output_files=None,
-            output_validator=None, cwd=None, prompt=None, in_background=False,
-            remove_if_failed=True, remove_previous=False, skip_if_exist=True):
+            output_validator=None, cwd=None, prompt=None, asynchronicity=False,
+            remove_if_failed=True, remove_previous=False, skip_if_exist=True,
+            **popen_kwargs):
         self.__logger.debug('input_files: {}'.format(input_files))
         input_found = {
             p: Path(p).exists() for p in self._args2list(input_files)
@@ -58,13 +59,13 @@ class ShellOperator(object):
             if remove_previous:
                 self._remove_existing_files(output_files)
             pp = prompt or '[{}] $ '.format(cwd or os.getcwd())
-            if in_background:
+            if asynchronicity:
                 self.__open_proc_list.append({
                     'output_files': output_files,
                     'output_validator': output_validator,
                     'remove_if_failed': remove_if_failed,
                     'procs': [
-                        self._popen(arg=a, prompt=pp, cwd=cwd)
+                        self._popen(arg=a, prompt=pp, cwd=cwd, **popen_kwargs)
                         for a in self._args2list(args)
                     ]
                 })
@@ -72,7 +73,9 @@ class ShellOperator(object):
                 procs = list()
                 for a in self._args2list(args):
                     try:
-                        proc = self._shell_c(arg=a, prompt=pp, cwd=cwd)
+                        proc = self._shell_c(
+                            arg=a, prompt=pp, cwd=cwd, **popen_kwargs
+                        )
                     except subprocess.SubprocessError as e:
                         if output_files and remove_if_failed:
                             self._remove_existing_files(output_files)
@@ -98,7 +101,7 @@ class ShellOperator(object):
                 )
             self.__open_proc_list = []
         else:
-            self.__logger.debug('No backgroud process.')
+            self.__logger.debug('There is no process.')
 
     @staticmethod
     def _args2list(args):
@@ -111,7 +114,7 @@ class ShellOperator(object):
         else:
             return [args]
 
-    def _popen(self, arg, prompt, cwd=None):
+    def _popen(self, arg, prompt, cwd=None, **popen_kwargs):
         self.__logger.debug('{0} <= {1}'.format(self.__executable, arg))
         command_line = prompt + arg
         self._print_line(command_line, stdout=self.__print_command)
@@ -126,11 +129,11 @@ class ShellOperator(object):
         else:
             fo = open('/dev/null', 'w')
         return subprocess.Popen(
-            arg, executable=self.__executable, stdout=fo, stderr=fo,
-            shell=True, cwd=cwd
+            args=arg, executable=self.__executable, stdout=fo, stderr=fo,
+            shell=True, cwd=cwd, **popen_kwargs
         )
 
-    def _shell_c(self, arg, prompt, cwd=None):
+    def _shell_c(self, arg, prompt, cwd=None, **popen_kwargs):
         self.__logger.debug('{0} <= {1}'.format(self.__executable, arg))
         command_line = prompt + arg
         self._print_line(command_line, stdout=self.__print_command)
@@ -152,8 +155,8 @@ class ShellOperator(object):
         else:
             fr = None
         p = subprocess.Popen(
-            arg, executable=self.__executable, stdout=fw, stderr=fw,
-            shell=True, cwd=cwd
+            args=arg, executable=self.__executable, stdout=fw, stderr=fw,
+            shell=True, cwd=cwd, **popen_kwargs
         )
         if fr:
             while p.poll() is None:
