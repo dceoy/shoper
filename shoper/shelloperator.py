@@ -115,7 +115,7 @@ class ShellOperator(object):
             return list(args)
 
     def _popen(self, arg, prompt, cwd=None, **popen_kwargs):
-        self.__logger.debug('{0} <= {1}'.format(self.__executable, arg))
+        self.__logger.debug('{0} <- `{1}`'.format(self.__executable, arg))
         command_line = prompt + arg
         self._print_line(command_line, stdout=self.__print_command)
         if self.__log_txt:
@@ -134,7 +134,7 @@ class ShellOperator(object):
         )
 
     def _shell_c(self, arg, prompt, cwd=None, **popen_kwargs):
-        self.__logger.debug('{0} <= {1}'.format(self.__executable, arg))
+        self.__logger.debug('{0} <- `{1}`'.format(self.__executable, arg))
         command_line = prompt + arg
         self._print_line(command_line, stdout=self.__print_command)
         if self.__log_txt:
@@ -180,6 +180,8 @@ class ShellOperator(object):
                           output_validator=None, remove_if_failed=True):
         p_failed = [vars(p) for p in procs if p.returncode != 0]
         if p_failed:
+            if output_files and remove_if_failed:
+                self._remove_existing_files(output_files)
             raise subprocess.SubprocessError(
                 'Commands returned non-zero exit statuses:' + os.linesep +
                 pformat(p_failed)
