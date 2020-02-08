@@ -31,30 +31,29 @@ class ShellOperator(object):
         for p in self._args2list(paths):
             if Path(p).exists():
                 os.remove(p)
-                self.__logger.debug('file removed: {}'.format(p))
+                self.__logger.debug(f'removed file: {p}')
 
     def run(self, args, input_files=None, output_files=None,
             output_validator=None, cwd=None, prompt=None, asynchronous=False,
             remove_if_failed=True, remove_previous=False, skip_if_exist=True,
             **popen_kwargs):
-        self.__logger.debug('input_files: {}'.format(input_files))
+        self.__logger.debug(f'input_files: {input_files}')
         input_found = {
             p: Path(p).exists() for p in self._args2list(input_files)
         }
-        self.__logger.debug('input_found: {}'.format(input_found))
-        self.__logger.debug('output_files: {}'.format(output_files))
+        self.__logger.debug(f'input_found: {input_found}')
+        self.__logger.debug(f'output_files: {output_files}')
         output_found = {
             p: Path(p).exists() for p in self._args2list(output_files)
         }
-        self.__logger.debug('output_found: {}'.format(output_found))
+        self.__logger.debug(f'output_found: {output_found}')
         if input_files and not all(input_found.values()):
             raise FileNotFoundError(
-                'input not found: {}'.format(
-                    ', '.join([p for p, s in input_found.items() if not s])
-                )
+                'input not found: '
+                + ', '.join([p for p, s in input_found.items() if not s])
             )
         elif output_files and all(output_found.values()) and skip_if_exist:
-            self.__logger.debug('skipped args: {}'.format(args))
+            self.__logger.debug(f'skipped args: {args}')
         else:
             if remove_previous:
                 self._remove_existing_files(output_files)
@@ -115,7 +114,7 @@ class ShellOperator(object):
             return list(args)
 
     def _popen(self, arg, prompt, cwd=None, **popen_kwargs):
-        self.__logger.debug('{0} <- `{1}`'.format(self.__executable, arg))
+        self.__logger.debug(f'{self.__executable} <- `{arg}`')
         command_line = prompt + arg
         self._print_line(command_line, stdout=self.__print_command)
         if self.__log_txt:
@@ -134,7 +133,7 @@ class ShellOperator(object):
         )
 
     def _shell_c(self, arg, prompt, cwd=None, **popen_kwargs):
-        self.__logger.debug('{0} <- `{1}`'.format(self.__executable, arg))
+        self.__logger.debug(f'{self.__executable} <- `{arg}`')
         command_line = prompt + arg
         self._print_line(command_line, stdout=self.__print_command)
         if self.__log_txt:
@@ -199,9 +198,7 @@ class ShellOperator(object):
         if f_not_found:
             if remove_if_failed and f_found:
                 self._remove_existing_files(f_found)
-            raise FileNotFoundError(
-                'output not found: {}'.format(f_not_found)
-            )
+            raise FileNotFoundError(f'output not found: {f_not_found}')
         elif func:
             f_validated = {p for p in f_found if func(p)}
             f_not_validated = set(f_found).difference(f_validated)
@@ -209,15 +206,11 @@ class ShellOperator(object):
                 if remove_if_failed:
                     self._remove_existing_files(f_found)
                 raise RuntimeError(
-                    'output not validated with {0}: {1}'.format(
-                        func, f_not_validated
-                    )
+                    f'output not validated with {func}: {f_not_validated}'
                 )
             else:
                 self.__logger.debug(
-                    'output validated with {0}: {1}'.format(
-                        func, f_validated
-                    )
+                    f'output validated with {func}: {f_validated}'
                 )
         else:
-            self.__logger.debug('output validated: {}'.format(f_found))
+            self.__logger.debug(f'output validated: {f_found}')
