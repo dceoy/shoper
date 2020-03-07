@@ -26,9 +26,9 @@ class ShellOperator(object):
         self.__print_command = print_command
         self.__open_proc_list = list()
         if clear_log_txt:
-            self._remove_existing_files_or_dirs(log_txt)
+            self._remove_files_or_dirs(log_txt)
 
-    def _remove_existing_files_or_dirs(self, paths):
+    def _remove_files_or_dirs(self, paths):
         for p in self._args2list(paths):
             if Path(p).is_dir():
                 shutil.rmtree(p)
@@ -37,34 +37,35 @@ class ShellOperator(object):
                 os.remove(p)
                 self.__logger.debug(f'file removed: {p}')
 
-    def run(self, args, input_files=None, output_files=None,
+    def run(self, args, input_files_or_dirs=None, output_files_or_dirs=None,
             output_validator=None, cwd=None, prompt=None, asynchronous=False,
             remove_if_failed=True, remove_previous=False, skip_if_exist=True,
             **popen_kwargs):
-        self.__logger.debug(f'input_files: {input_files}')
+        self.__logger.debug(f'input_files_or_dirs: {input_files_or_dirs}')
         input_found = {
-            p: Path(p).exists() for p in self._args2list(input_files)
+            p: Path(p).exists() for p in self._args2list(input_files_or_dirs)
         }
         self.__logger.debug(f'input_found: {input_found}')
-        self.__logger.debug(f'output_files: {output_files}')
+        self.__logger.debug(f'output_files_or_dirs: {output_files_or_dirs}')
         output_found = {
-            p: Path(p).exists() for p in self._args2list(output_files)
+            p: Path(p).exists() for p in self._args2list(output_files_or_dirs)
         }
         self.__logger.debug(f'output_found: {output_found}')
-        if input_files and not all(input_found.values()):
+        if input_files_or_dirs and not all(input_found.values()):
             raise FileNotFoundError(
                 'input not found: '
                 + ', '.join([p for p, s in input_found.items() if not s])
             )
-        elif output_files and all(output_found.values()) and skip_if_exist:
+        elif (output_files_or_dirs and all(output_found.values())
+              and skip_if_exist):
             self.__logger.debug(f'args skipped: {args}')
         else:
             if remove_previous:
-                self._remove_existing_files_or_dirs(output_files)
+                self._remove_files_or_dirs(output_files_or_dirs)
             pp = prompt or '[{}] $ '.format(cwd or os.getcwd())
             if asynchronous:
                 self.__open_proc_list.append({
-                    'output_files': output_files,
+                    'output_files_or_dirs': output_files_or_dirs,
                     'output_validator': output_validator,
                     'remove_if_failed': remove_if_failed,
                     'procs': [
@@ -80,13 +81,13 @@ class ShellOperator(object):
                             arg=a, prompt=pp, cwd=cwd, **popen_kwargs
                         )
                     except subprocess.SubprocessError as e:
-                        if output_files and remove_if_failed:
-                            self._remove_existing_files_or_dirs(output_files)
+                        if output_files_or_dirs and remove_if_failed:
+                            self._remove_files_or_dirs(output_files_or_dirs)
                         raise e
                     else:
                         procs.append(proc)
                 self._validate_results(
-                    procs=procs, output_files=output_files,
+                    procs=procs, output_files_or_dirs=output_files_or_dirs,
                     output_validator=output_validator,
                     remove_if_failed=remove_if_failed
                 )
@@ -98,7 +99,8 @@ class ShellOperator(object):
                     p.wait()
                     [f.close() for f in [p.stdout, p.stderr] if f]
                 self._validate_results(
-                    procs=d['procs'], output_files=d['output_files'],
+                    procs=d['procs'],
+                    output_files_or_dirs=d['output_files_or_dirs'],
                     output_validator=d['output_validator'],
                     remove_if_failed=d['remove_if_failed']
                 )
@@ -108,10 +110,10 @@ class ShellOperator(object):
 
     @staticmethod
     def _args2list(args):
-        if isinstance(args, list):
-            return args
-        elif isinstance(args, str):
+        if isinstance(args, str):
             return [args]
+        elif isinstance(args, list):
+            return args
         elif args is None:
             return list()
         else:
@@ -179,36 +181,37 @@ class ShellOperator(object):
         else:
             self.__logger.info(strings)
 
-    def _validate_results(self, procs, output_files=None,
+    def _validate_results(self, procs, output_files_or_dirs=None,
                           output_validator=None, remove_if_failed=True):
         p_failed = [vars(p) for p in procs if p.returncode != 0]
         if p_failed:
-            if output_files and remove_if_failed:
-                self._remove_existing_files_or_dirs(output_files)
+            if output_files_or_dirs and remove_if_failed:
+                self._remove_files_or_dirs(output_files_or_dirs)
             raise subprocess.SubprocessError(
                 'Commands returned non-zero exit statuses:' + os.linesep +
                 pformat(p_failed)
             )
-        elif output_files:
+        elif output_files_or_dirs:
             self._validate_outputs(
-                files=output_files, func=output_validator,
+                files_or_dirs=output_files_or_dirs, func=output_validator,
                 remove_if_failed=remove_if_failed
             )
 
-    def _validate_outputs(self, files, func=None, remove_if_failed=True):
-        f_all = self._args2list(files)
+    def _validate_outputs(self, files_or_dirs, func=None,
+                          remove_if_failed=True):
+        f_all = self._args2list(files_or_dirs)
         f_found = {p for p in f_all if Path(p).exists()}
         f_not_found = set(f_all).difference(f_found)
         if f_not_found:
             if remove_if_failed and f_found:
-                self._remove_existing_files_or_dirs(f_found)
+                self._remove_files_or_dirs(f_found)
             raise FileNotFoundError(f'output not found: {f_not_found}')
         elif func:
             f_validated = {p for p in f_found if func(p)}
             f_not_validated = set(f_found).difference(f_validated)
             if f_not_validated:
                 if remove_if_failed:
-                    self._remove_existing_files_or_dirs(f_found)
+                    self._remove_files_or_dirs(f_found)
                 raise RuntimeError(
                     f'output not validated with {func}: {f_not_validated}'
                 )
