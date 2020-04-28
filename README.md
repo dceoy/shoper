@@ -4,6 +4,7 @@ shoper
 Simple shell operator module for Python
 
 [![wercker status](https://app.wercker.com/status/276fcd7ab51e9ef282981a6f38fd2020/s/master "wercker status")](https://app.wercker.com/project/byKey/276fcd7ab51e9ef282981a6f38fd2020)
+![Upload Python Package](https://github.com/dceoy/shoper/workflows/Upload%20Python%20Package/badge.svg)
 
 Installation
 ------------
