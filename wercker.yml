@@ -7,11 +7,32 @@ test:
     - script:
         name: Install shoper
         code: |
-          pip install -U .
+          python3 -m pip install -U .
     - script:
         name: Validate the codes using flake8
         code: |
-          find . -name '*.py' | xargs flake8 --no-isort-config
+          find . -name '*.py' | xargs flake8
+    - script:
+        name: Test the class
+        code: |
+          cat << EOF | python3
+          from shoper.shelloperator import ShellOperator
+          sh = ShellOperator()
+          sh.run('ls -l')
+          sh.run(
+              args=[
+                  'echo ${RANDOM} | tee random0.txt',
+                  'echo ${RANDOM} | tee random1.txt',
+                  'echo ${RANDOM} | tee random2.txt'
+              ],
+              output_files_or_dirs=['random0.txt', 'random1.txt', 'random2.txt']
+          )
+          sh.run(
+              args='sort random[012].txt | tee sorted.txt',
+              input_files_or_dirs=['random0.txt', 'random1.txt', 'random2.txt'],
+              output_files_or_dirs='sorted.txt'
+          )
+          EOF
   after-steps:
     - slack-notifier:
         url: $SLACK_URL
