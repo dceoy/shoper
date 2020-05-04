@@ -21,7 +21,7 @@ class ShellOperator(object):
                  logger=None, print_command=True, executable='/bin/bash'):
         self.__logger = logger or logging.getLogger(__name__)
         self.__executable = executable
-        self.__log_txt = log_txt
+        self.__log_txt = (str(log_txt) if log_txt else None)
         self.__quiet = quiet
         self.__print_command = print_command
         self.__open_proc_list = list()
@@ -29,12 +29,12 @@ class ShellOperator(object):
             self._remove_files_or_dirs(log_txt)
 
     def _remove_files_or_dirs(self, paths):
-        for p in self._args2list(paths):
-            if Path(p).is_dir():
-                shutil.rmtree(p)
+        for p in self._args2pathlist(paths):
+            if p.is_dir():
+                shutil.rmtree(str(p))
                 self.__logger.debug(f'directory removed: {p}')
-            elif Path(p).exists():
-                os.remove(p)
+            elif p.exists():
+                os.remove(str(p))
                 self.__logger.debug(f'file removed: {p}')
 
     def run(self, args, input_files_or_dirs=None, output_files_or_dirs=None,
@@ -43,18 +43,20 @@ class ShellOperator(object):
             **popen_kwargs):
         self.__logger.debug(f'input_files_or_dirs: {input_files_or_dirs}')
         input_found = {
-            p: Path(p).exists() for p in self._args2list(input_files_or_dirs)
+            str(p): p.exists()
+            for p in self._args2pathlist(input_files_or_dirs)
         }
         self.__logger.debug(f'input_found: {input_found}')
         self.__logger.debug(f'output_files_or_dirs: {output_files_or_dirs}')
         output_found = {
-            p: Path(p).exists() for p in self._args2list(output_files_or_dirs)
+            str(p): p.exists()
+            for p in self._args2pathlist(output_files_or_dirs)
         }
         self.__logger.debug(f'output_found: {output_found}')
         if input_files_or_dirs and not all(input_found.values()):
             raise FileNotFoundError(
                 'input not found: '
-                + ', '.join([p for p, s in input_found.items() if not s])
+                + ', '.join([p for p, b in input_found.items() if not b])
             )
         elif (output_files_or_dirs and all(output_found.values())
               and skip_if_exist):
@@ -108,9 +110,12 @@ class ShellOperator(object):
         else:
             self.__logger.debug('There is no process.')
 
+    def _args2pathlist(self, args):
+        return [Path(str(a)) for a in self._args2list(args=args)]
+
     @staticmethod
     def _args2list(args):
-        if isinstance(args, str):
+        if isinstance(args, (str, Path)):
             return [args]
         elif isinstance(args, list):
             return args
@@ -199,9 +204,9 @@ class ShellOperator(object):
 
     def _validate_outputs(self, files_or_dirs, func=None,
                           remove_if_failed=True):
-        f_all = self._args2list(files_or_dirs)
+        f_all = {str(p) for p in self._args2list(files_or_dirs)}
         f_found = {p for p in f_all if Path(p).exists()}
-        f_not_found = set(f_all).difference(f_found)
+        f_not_found = f_all.difference(f_found)
         if f_not_found:
             if remove_if_failed and f_found:
                 self._remove_files_or_dirs(f_found)
