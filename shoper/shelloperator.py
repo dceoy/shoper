@@ -64,14 +64,17 @@ class ShellOperator(object):
         else:
             if remove_previous:
                 self._remove_files_or_dirs(output_files_or_dirs)
-            pp = prompt or '[{}] $ '.format(cwd or os.getcwd())
+            common_kwargs = {
+                'prompt': (prompt or '[{}] $ '.format(cwd or os.getcwd())),
+                'cwd': (str(cwd) if cwd else None), **popen_kwargs
+            }
             if asynchronous:
                 self.__open_proc_list.append({
                     'output_files_or_dirs': output_files_or_dirs,
                     'output_validator': output_validator,
                     'remove_if_failed': remove_if_failed,
                     'procs': [
-                        self._popen(arg=a, prompt=pp, cwd=cwd, **popen_kwargs)
+                        self._popen(arg=a, **common_kwargs)
                         for a in self._args2list(args)
                     ]
                 })
@@ -79,9 +82,7 @@ class ShellOperator(object):
                 procs = list()
                 for a in self._args2list(args):
                     try:
-                        proc = self._shell_c(
-                            arg=a, prompt=pp, cwd=cwd, **popen_kwargs
-                        )
+                        proc = self._shell_c(arg=a, **common_kwargs)
                     except subprocess.SubprocessError as e:
                         if output_files_or_dirs and remove_if_failed:
                             self._remove_files_or_dirs(output_files_or_dirs)
