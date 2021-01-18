@@ -32,10 +32,10 @@ class ShellOperator(object):
         for p in self._args2pathlist(paths):
             if p.is_dir():
                 shutil.rmtree(str(p))
-                self.__logger.debug(f'directory removed: {p}')
+                self.__logger.warning(f'directory removed: {p}')
             elif p.exists():
                 os.remove(str(p))
-                self.__logger.debug(f'file removed: {p}')
+                self.__logger.warning(f'file removed: {p}')
 
     def run(self, args, input_files_or_dirs=None, output_files_or_dirs=None,
             output_validator=None, cwd=None, prompt=None, asynchronous=False,
