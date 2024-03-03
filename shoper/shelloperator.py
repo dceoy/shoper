@@ -7,7 +7,7 @@ https://github.com/dceoy/shoper
 import logging
 import os
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 from pathlib import Path
