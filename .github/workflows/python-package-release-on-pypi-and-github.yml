@@ -1,0 +1,30 @@
+---
+name: Release on PyPI and GitHub
+on:
+  workflow_dispatch:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        description: Python version to use
+        default: 3.x
+    secrets:
+      PYPI_API_TOKEN:
+        required: true
+        description: PyPI API token
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    with:
+      python-version: ${{ inputs.python-version }}
+  release:
+    needs:
+      - test
+    uses: dceoy/gh-actions-for-devops/.github/workflows/python-package-release-on-pypi-and-github.yml@main
+    with:
+      python-version: ${{ inputs.python-version }}
+    secrets:
+      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore

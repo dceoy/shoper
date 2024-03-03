@@ -7,25 +7,45 @@ on:
   pull_request:
     branches:
       - master
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        description: Python version to use
+        default: 3.x
+  workflow_dispatch:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        description: Python version to use
+        default: 3.x
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+    working-directory: .
 jobs:
-  test_installation:
+  lint-and-scan:
+    uses: dceoy/gh-actions-for-devops/.github/workflows/python-package-lint-and-scan.yml@main
+    with:
+      package-path: .
+      python-version: ${{ inputs.python-version || '3.x' }}
+      mypy-options: --exclude=build --install-types --non-interactive --ignore-missing-imports
+  test-cli:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-      - name: Install shoper
+          python-version: ${{ inputs.python-version || '3.x' }}
+      - name: Install packages
         run: |
-          python3 -m pip install -U \
-            autopep8 flake8 flake8-bugbear flake8-isort pep8-naming .
-      - name: Validate the codes using flake8
-        run: |
-          find . -name '*.py' | xargs flake8
+          pip install -U --no-cache-dir .
       - name: Test the class
+        shell: python {0}
         run: |
-          cat << EOF | python3
           from shoper.shelloperator import ShellOperator
           sh = ShellOperator()
           sh.run('ls -l')
@@ -42,4 +62,3 @@ jobs:
               input_files_or_dirs=['random0.txt', 'random1.txt', 'random2.txt'],
               output_files_or_dirs='sorted.txt'
           )
-          EOF

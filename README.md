@@ -4,7 +4,7 @@ shoper
 Simple shell operator module for Python
 
 [![Test](https://github.com/dceoy/shoper/actions/workflows/test.yml/badge.svg)](https://github.com/dceoy/shoper/actions/workflows/test.yml)
-[![Upload Python Package](https://github.com/dceoy/shoper/actions/workflows/python-publish.yml/badge.svg)](https://github.com/dceoy/shoper/actions/workflows/python-publish.yml)
+[![Upload Python Package](https://github.com/dceoy/shoper/actions/workflows/python-package-release-on-pypi-and-github.yml/badge.svg)](https://github.com/dceoy/shoper/actions/workflows/python-package-release-on-pypi-and-github.yml)
 
 Installation
 ------------
