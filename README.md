@@ -19,7 +19,7 @@ Example
 List directory contents with `ls`.
 
 ```py
-from shoper.shelloperator import ShellOperator
+from shoper import ShellOperator
 
 sh = ShellOperator()
 sh.run('ls -l')
@@ -28,7 +28,7 @@ sh.run('ls -l')
 Write and sort random numbers.
 
 ```py
-from shoper.shelloperator import ShellOperator
+from shoper import ShellOperator
 
 sh = ShellOperator()
 sh.run(

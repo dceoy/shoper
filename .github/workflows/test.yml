@@ -46,7 +46,7 @@ jobs:
       - name: Test the class
         shell: python {0}
         run: |
-          from shoper.shelloperator import ShellOperator
+          from shoper import ShellOperator
           sh = ShellOperator()
           sh.run('ls -l')
           sh.run(

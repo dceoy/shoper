@@ -1,3 +1,5 @@
 #!/usr/bin/env python
 
-__version__ = 'v1.3.2'
+from .shelloperator import ShellOperator  # noqa: F401
+
+__version__ = 'v1.4.0'
