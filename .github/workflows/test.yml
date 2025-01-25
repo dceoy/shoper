@@ -31,7 +31,6 @@ jobs:
     with:
       package-path: .
       python-version: ${{ inputs.python-version || '3.x' }}
-      mypy-options: --exclude=build --install-types --non-interactive --ignore-missing-imports
   test-cli:
     runs-on: ubuntu-latest
     steps:
