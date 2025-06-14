@@ -179,7 +179,7 @@ class ShellOperator:
         if isinstance(args, (str, Path)):
             return [args]
         elif isinstance(args, list):
-            return args
+            return args  # type: ignore[reportUnknownVariableType]
         elif args is None:
             return []
         else:
@@ -211,7 +211,7 @@ class ShellOperator:
                     f.write(command_line + os.linesep)
             fo = Path(self.__log_txt).open(mode="a", encoding="utf-8")  # noqa: SIM115
         else:
-            fo = Path("/dev/null").open(mode="w", encoding="utf-8")     # noqa: SIM115
+            fo = Path("/dev/null").open(mode="w", encoding="utf-8")  # noqa: SIM115
         return subprocess.Popen(
             args=arg,
             executable=self.executable,
@@ -248,7 +248,7 @@ class ShellOperator:
                     f.write(command_line + os.linesep)
             fw = Path(self.__log_txt).open(mode="a", encoding="utf-8")  # noqa: SIM115
         elif self.quiet:
-            fw = Path("/dev/null").open(mode="w", encoding="utf-8")     # noqa: SIM115
+            fw = Path("/dev/null").open(mode="w", encoding="utf-8")  # noqa: SIM115
         else:
             fw = None
         if self.__log_txt and not self.quiet:
