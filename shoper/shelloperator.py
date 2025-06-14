@@ -179,7 +179,7 @@ class ShellOperator:
         if isinstance(args, (str, Path)):
             return [args]
         elif isinstance(args, list):
-            return args
+            return args  # type: ignore[reportUnknownVariableType]
         elif args is None:
             return []
         else:

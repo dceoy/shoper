@@ -32,7 +32,7 @@ RUN \
       --mount=type=cache,target=/root/.cache \
       --mount=type=bind,source=.,target=/mnt/host \
       cp -a /mnt/host /tmp/shoper \
-      && /usr/local/bin/python -m pip install --prefix /usr -U pip /tmp/shoper
+      && /usr/local/bin/pip install -U --no-cache-dir pip /tmp/shoper
 
 RUN \
       groupadd --gid "${USER_GID}" "${USER_NAME}" \
@@ -44,4 +44,4 @@ WORKDIR "/home/${USER_NAME}"
 
 HEALTHCHECK NONE
 
-ENTRYPOINT ["python"]
+ENTRYPOINT ["/usr/local/bin/python"]
