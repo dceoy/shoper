@@ -1,9 +1,10 @@
 [project]
 name = "shoper"
 description = "Simple shell operator module"
-authors = [{name = "Daichi Narushima", email = "dnarsil+github@gmail.com"}]
-maintainers = [{name = "Daichi Narushima", email = "dnarsil+github@gmail.com"}]
-license = {file = "LICENSE"}
+authors = [{name = "Daichi Narushima", email = "dceoy@users.noreply.github.com"}]
+maintainers = [{name = "Daichi Narushima", email = "dceoy@users.noreply.github.com"}]
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
 dynamic = ["version"]
 requires-python = ">= 3.9"

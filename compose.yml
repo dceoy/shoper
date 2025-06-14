@@ -1,0 +1,23 @@
+---
+services:
+  shoper:
+    container_name: shoper
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: python
+      args:
+        PYTHON_VERSION: '3.13'
+        USER_NAME: shoper
+        USER_UID: '1001'
+        USER_GID: '1001'
+    image: dceoy/sdeul:latest
+    volumes:
+      - ${PWD}:/workspace
+    working_dir: /workspace
+    entrypoint:
+      - /usr/local/bin/python
+    command:
+      - -m
+      - pip
+      - freeze
