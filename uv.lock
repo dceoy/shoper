@@ -93,12 +93,6 @@ wheels = [
 name = "shoper"
 source = { editable = "." }
 
-[package.optional-dependencies]
-test = [
-    { name = "pytest" },
-    { name = "pytest-mock" },
-]
-
 [package.dev-dependencies]
 test = [
     { name = "pytest" },
@@ -106,11 +100,6 @@ test = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "pytest", marker = "extra == 'test'", specifier = ">=7.0.0" },
-    { name = "pytest-mock", marker = "extra == 'test'", specifier = ">=3.10.0" },
-]
-provides-extras = ["test"]
 
 [package.metadata.requires-dev]
 test = [
