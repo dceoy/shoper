@@ -17,6 +17,12 @@ classifiers = [
   "Topic :: System :: Shells"
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest >= 7.0.0",
+    "pytest-mock >= 3.10.0",
+]
+
 [project.urls]
 Repository = "https://github.com/dceoy/shoper.git"
 
