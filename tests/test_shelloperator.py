@@ -176,7 +176,9 @@ class TestShellOperatorRun:
         mock_shell_c = mocker.patch.object(shell_op, "_shell_c")
 
         shell_op.run(
-            "echo test", output_files_or_dirs=["existing_file.txt"], skip_if_exist=True,
+            "echo test",
+            output_files_or_dirs=["existing_file.txt"],
+            skip_if_exist=True,
         )
 
         mock_shell_c.assert_not_called()
@@ -187,13 +189,17 @@ class TestShellOperatorRun:
 
         mock_remove = mocker.patch.object(shell_op, "_remove_files_or_dirs")
         mock_shell_c = mocker.patch.object(
-            shell_op, "_shell_c", return_value=MagicMock(returncode=0),
+            shell_op,
+            "_shell_c",
+            return_value=MagicMock(returncode=0),
         )
         mock_validate = mocker.patch.object(shell_op, "_validate_results")
         mocker.patch.object(shell_op, "_args2list", return_value=["echo test"])
 
         shell_op.run(
-            "echo test", output_files_or_dirs=["output.txt"], remove_previous=True,
+            "echo test",
+            output_files_or_dirs=["output.txt"],
+            remove_previous=True,
         )
 
         mock_remove.assert_called_once_with(["output.txt"])
@@ -232,7 +238,9 @@ class TestShellOperatorRun:
 
         with pytest.raises(subprocess.SubprocessError):
             shell_op.run(
-                "false", output_files_or_dirs=["output.txt"], remove_if_failed=True,
+                "false",
+                output_files_or_dirs=["output.txt"],
+                remove_if_failed=True,
             )
 
         mock_remove.assert_called_once_with(["output.txt"])
@@ -257,7 +265,9 @@ class TestShellOperatorRun:
         shell_op = ShellOperator()
 
         mock_shell_c = mocker.patch.object(
-            shell_op, "_shell_c", return_value=MagicMock(returncode=0),
+            shell_op,
+            "_shell_c",
+            return_value=MagicMock(returncode=0),
         )
         mock_validate = mocker.patch.object(shell_op, "_validate_results")
         mocker.patch.object(shell_op, "_args2list", return_value=["pwd"])
@@ -421,7 +431,9 @@ class TestShellOperatorValidation:
         )
 
         mock_validate_outputs.assert_called_once_with(
-            files_or_dirs=["output.txt"], func=None, remove_if_failed=True,
+            files_or_dirs=["output.txt"],
+            func=None,
+            remove_if_failed=True,
         )
 
     def test_validate_results_process_failure(self, mocker) -> None:
@@ -494,7 +506,9 @@ class TestShellOperatorValidation:
         validator = lambda p: False
         with pytest.raises(RuntimeError) as exc_info:
             shell_op._validate_outputs(
-                ["output.txt"], func=validator, remove_if_failed=True,
+                ["output.txt"],
+                func=validator,
+                remove_if_failed=True,
             )
 
         assert "output not validated" in str(exc_info.value)
