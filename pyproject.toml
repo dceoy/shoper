@@ -58,10 +58,10 @@ select = [
   "FURB",   # refurb (FURB)
   "RUF",    # Ruff-specific rules (RUF)
   "YTT",    # flake8-2020 (YTT)
-  # "ANN",    # flake8-annotations (ANN)
+  "ANN",    # flake8-annotations (ANN)
   "ASYNC",  # flake8-async (ASYNC)
   "BLE",    # flake8-blind-except (BLE)
-  # "FBT",    # flake8-boolean-trap (FBT)
+  "FBT",    # flake8-boolean-trap (FBT)
   "A",      # flake8-builtins (A)
   "COM",    # flake8-commas (COM)
   # "CPY",    # flake8-copyright (CPY)
@@ -69,8 +69,8 @@ select = [
   "T10",    # flake8-debugger (T10)
   "DJ",     # flake8-django (DJ)
   "EM",     # flake8-errmsg (EM)
-  # "EXE",    # flake8-executable (EXE)
-  # "FA",     # flake8-future-annotations (FA)
+  "EXE",    # flake8-executable (EXE)
+  "FA",     # flake8-future-annotations (FA)
   "ISC",    # flake8-implicit-str-concat (ISC)
   "ICN",    # flake8-import-conventions (ICN)
   "LOG",    # flake8-logging (LOG)
@@ -99,13 +99,9 @@ select = [
   "DOC"     # pydoclint (DOC)
 ]
 ignore = [
-  "B008",     # function-call-in-default-argument
-  "A002",     # builtin-argument-shadowing
-  "A004",     # builtin-import-shadowing
-  "COM812",   # missing-trailing-comma
-  "ISC001",   # single-line-implicit-string-concatenation
-  "PIE790",   # unnecessary-placeholder
-  "TRY003",   # raise-vanilla-args
+  "FA100",    # future-rewritable-type-annotation
+  "FBT001",   # boolean-type-hint-positional-argument
+  "FBT002",   # boolean-default-value-positional-argument
 ]
 
 [tool.ruff.lint.pydocstyle]
