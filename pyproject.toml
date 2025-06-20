@@ -17,11 +17,6 @@ classifiers = [
   "Topic :: System :: Shells"
 ]
 
-[project.optional-dependencies]
-test = [
-    "pytest >= 7.0.0",
-    "pytest-mock >= 3.10.0",
-]
 
 [project.urls]
 Repository = "https://github.com/dceoy/shoper.git"
@@ -124,3 +119,9 @@ threads = 0
 [build-system]
 requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+test = [
+    "pytest>=8.4.1",
+    "pytest-mock>=3.14.1",
+]
