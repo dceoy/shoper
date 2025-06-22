@@ -10,8 +10,8 @@ For more information, visit: https://github.com/dceoy/shoper
 Example:
     Basic usage:
         >>> from shoper.shelloperator import ShellOperator
-        >>> shell_op = ShellOperator(log_txt="commands.log", quiet=False)
-        >>> shell_op.run("ls -la", output_files_or_dirs=["output.txt"])
+        >>> shell_op = ShellOperator(log_txt="commands.log", quiet=True)
+        >>> # shell_op.run("echo 'Hello'")
 """
 
 # pyright: reportArgumentType=false
@@ -49,13 +49,13 @@ class ShellOperator:
 
     Example:
         Basic usage:
-            >>> shell_op = ShellOperator(log_txt="commands.log")
-            >>> shell_op.run("echo 'Hello World'", output_files_or_dirs=["output.txt"])
+            >>> shell_op = ShellOperator(log_txt="commands.log", quiet=True)
+            >>> # shell_op.run("echo 'Hello World'")
 
         Asynchronous execution:
-            >>> shell_op = ShellOperator()
-            >>> shell_op.run("long_running_command", asynchronous=True)
-            >>> shell_op.wait()  # Wait for completion
+            >>> shell_op = ShellOperator(quiet=True)
+            >>> # shell_op.run("sleep 1", asynchronous=True)
+            >>> # shell_op.wait()  # Wait for completion
     """
 
     log_txt: Optional[Union[str, Path]] = None
@@ -161,13 +161,14 @@ class ShellOperator:
             subprocess.SubprocessError: If any command returns a non-zero exit status.
 
         Example:
-            >>> shell_op = ShellOperator()
-            >>> shell_op.run(
-            ...     "gcc -o program source.c",
-            ...     input_files_or_dirs=["source.c"],
-            ...     output_files_or_dirs=["program"],
-            ...     remove_if_failed=True
-            ... )
+            >>> shell_op = ShellOperator(quiet=True)
+            >>> # Example: compile a C program
+            >>> # shell_op.run(
+            >>> #     "gcc -o program source.c",
+            >>> #     input_files_or_dirs=["source.c"],
+            >>> #     output_files_or_dirs=["program"],
+            >>> #     remove_if_failed=True
+            >>> # )
 
         Note:
             - Commands are executed in the order provided
@@ -246,10 +247,11 @@ class ShellOperator:
             - The internal process list is cleared after all processes complete
 
         Example:
-            >>> shell_op = ShellOperator()
-            >>> shell_op.run("long_command_1", asynchronous=True)
-            >>> shell_op.run("long_command_2", asynchronous=True)
-            >>> shell_op.wait()  # Wait for both commands to complete
+            >>> shell_op = ShellOperator(quiet=True)
+            >>> # Example: run multiple async commands
+            >>> # shell_op.run("sleep 1", asynchronous=True)
+            >>> # shell_op.run("sleep 1", asynchronous=True)
+            >>> # shell_op.wait()  # Wait for both commands to complete
         """
         if self.__open_proc_list:
             for d in self.__open_proc_list:
@@ -287,7 +289,8 @@ class ShellOperator:
         Example:
             >>> shell_op = ShellOperator()
             >>> paths = shell_op._args2pathlist(["file1.txt", Path("file2.txt")])
-            >>> isinstance(paths[0], Path)  # True
+            >>> isinstance(paths[0], Path)
+            True
         """
         return [Path(str(a)) for a in self._args2list(args=args)]
 
@@ -360,10 +363,14 @@ class ShellOperator:
             - Process runs in background - use wait() or process.wait() to wait
 
         Example:
-            >>> shell_op = ShellOperator(log_txt="commands.log")
-            >>> process = shell_op._popen("sleep 10", "[test] $ ")
+            >>> shell_op = ShellOperator(
+            ...     log_txt="commands.log", quiet=True, print_command=False
+            ... )
+            >>> process = shell_op._popen("echo 'async test'", "[test] $ ")
             >>> # Process is running in background
-            >>> process.wait()  # Wait for completion
+            >>> exit_code = process.wait()  # Wait for completion
+            >>> exit_code
+            0
         """
         self.logger.debug("%s <- `%s`", self.executable, arg)
         command_line = prompt + arg
@@ -426,9 +433,12 @@ class ShellOperator:
             - Otherwise: Output goes to stdout/stderr directly
 
         Example:
-            >>> shell_op = ShellOperator(log_txt="commands.log")
-            >>> process = shell_op._shell_c("ls -la", "[test] $ ")
+            >>> shell_op = ShellOperator(
+            ...     log_txt="commands.log", quiet=True, print_command=False
+            ... )
+            >>> process = shell_op._shell_c("echo 'test'", "[test] $ ")
             >>> print(f"Command completed with code: {process.returncode}")
+            Command completed with code: 0
         """
         self.logger.debug("%s <- `%s`", self.executable, arg)
         command_line = prompt + arg
@@ -491,8 +501,8 @@ class ShellOperator:
             - Typically used for command execution logging and prompts
 
         Example:
-            >>> shell_op = ShellOperator()
-            >>> shell_op._print_line("Executing command...", stdout=True)
+            >>> shell_op = ShellOperator(quiet=True)
+            >>> shell_op._print_line("Executing command...", stdout=False)
         """
         self.logger.info(strings)
         if stdout:
@@ -534,12 +544,12 @@ class ShellOperator:
 
         Example:
             >>> shell_op = ShellOperator()
-            >>> # After running processes
-            >>> shell_op._validate_results(
-            ...     procs=[completed_process],
-            ...     output_files_or_dirs=["output.txt"],
-            ...     output_validator=lambda p: Path(p).stat().st_size > 0
-            ... )
+            >>> # Example: validate command results
+            >>> # shell_op._validate_results(
+            >>> #     procs=[completed_process],
+            >>> #     output_files_or_dirs=["output.txt"],
+            >>> #     output_validator=lambda p: Path(p).stat().st_size > 0
+            >>> # )
         """
         p_failed = [vars(p) for p in procs if p.returncode != 0]
         if p_failed:
@@ -593,12 +603,12 @@ class ShellOperator:
 
         Example:
             >>> shell_op = ShellOperator()
-            >>> # Validate files exist and are non-empty
-            >>> shell_op._validate_outputs(
-            ...     files_or_dirs=["output1.txt", "output2.txt"],
-            ...     func=lambda p: Path(p).stat().st_size > 0,
-            ...     remove_if_failed=True
-            ... )
+            >>> # Example: validate output files
+            >>> # shell_op._validate_outputs(
+            >>> #     files_or_dirs=["output1.txt", "output2.txt"],
+            >>> #     func=lambda p: Path(p).stat().st_size > 0,
+            >>> #     remove_if_failed=True
+            >>> # )
         """
         f_all = {str(p) for p in self._args2list(files_or_dirs)}
         f_found = {p for p in f_all if Path(p).exists()}
