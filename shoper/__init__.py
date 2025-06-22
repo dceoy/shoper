@@ -1,19 +1,24 @@
-"""Structural Data Extractor using LLMs (sdeul) package.
+"""Shoper: A simple shell operator module for Python.
 
-This package provides functionality for extracting structured JSON data from
-unstructured text using various Language Learning Models (LLMs) including
-OpenAI, Google, Groq, Amazon Bedrock, Ollama, and local models via llama.cpp.
+This module provides a clean interface for executing shell commands with features
+like input/output file tracking, asynchronous execution, and validation.
 
-The package includes:
-- CLI interface for data extraction and JSON validation
-- REST API for data extraction and validation
-- Support for multiple LLM providers
-- JSON Schema validation
-- Text extraction from various sources
+The main class ShellOperator wraps subprocess operations with additional
+functionality for logging, error handling, and file management.
+
+Example:
+    Basic usage of ShellOperator:
+
+    >>> from shoper import ShellOperator
+    >>> shell_op = ShellOperator(log_txt="commands.log")
+    >>> shell_op.run("echo 'Hello World'")
+
+Attributes:
+    __version__ (str): The version string of the package.
 """
 
-from importlib.metadata import version
+# pyright: reportUnusedImport=false
 
-__version__ = version(__package__) if __package__ else None
+from .shelloperator import ShellOperator  # noqa: F401
 
-__all__ = ["__version__"]
+__version__ = "v1.4.3"
