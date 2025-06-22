@@ -11,7 +11,7 @@ Example:
     Basic usage:
         >>> from shoper.shelloperator import ShellOperator
         >>> shell_op = ShellOperator(log_txt="commands.log", quiet=True)
-        >>> # shell_op.run("echo 'Hello' > output.txt", output_files_or_dirs=["output.txt"])
+        >>> # shell_op.run("echo 'Hello'")
 """
 
 # pyright: reportArgumentType=false
@@ -50,7 +50,7 @@ class ShellOperator:
     Example:
         Basic usage:
             >>> shell_op = ShellOperator(log_txt="commands.log", quiet=True)
-            >>> # shell_op.run("echo 'Hello World' > output.txt", output_files_or_dirs=["output.txt"])
+            >>> # shell_op.run("echo 'Hello World'")
 
         Asynchronous execution:
             >>> shell_op = ShellOperator(quiet=True)
@@ -363,7 +363,9 @@ class ShellOperator:
             - Process runs in background - use wait() or process.wait() to wait
 
         Example:
-            >>> shell_op = ShellOperator(log_txt="commands.log", quiet=True, print_command=False)
+            >>> shell_op = ShellOperator(
+            ...     log_txt="commands.log", quiet=True, print_command=False
+            ... )
             >>> process = shell_op._popen("echo 'async test'", "[test] $ ")
             >>> # Process is running in background
             >>> exit_code = process.wait()  # Wait for completion
@@ -431,7 +433,9 @@ class ShellOperator:
             - Otherwise: Output goes to stdout/stderr directly
 
         Example:
-            >>> shell_op = ShellOperator(log_txt="commands.log", quiet=True, print_command=False)
+            >>> shell_op = ShellOperator(
+            ...     log_txt="commands.log", quiet=True, print_command=False
+            ... )
             >>> process = shell_op._shell_c("echo 'test'", "[test] $ ")
             >>> print(f"Command completed with code: {process.returncode}")
             Command completed with code: 0

@@ -21,22 +21,44 @@ Key architectural patterns:
 
 ## Development Commands
 
+### Environment Setup
+```bash
+uv sync                         # Install dependencies and sync environment
+```
+
 ### Linting and Type Checking
 ```bash
-ruff check .                    # Run linter
-ruff check . --fix             # Auto-fix linting issues
-pyright                        # Run type checker
+uv run ruff check .             # Run linter
+uv run ruff check . --fix       # Auto-fix linting issues
+uv run pyright                  # Run type checker
 ```
 
 ### Testing
+```bash
+uv run pytest                   # Run tests (if available)
+```
 There are no formal unit tests. Testing is done via:
 - GitHub Actions workflow that installs the package and runs basic functionality tests
 - Manual testing using the examples from README.md
 
+### Pre-commit Workflow
+**IMPORTANT: Always run these commands before committing:**
+```bash
+# Run linter and fix issues
+uv run ruff check . --fix
+
+# Run type checker
+uv run pyright
+
+# Run tests (if available)
+uv run pytest
+```
+All commands must pass before committing changes.
+
 ### Building and Installation
 ```bash
-pip install -e .               # Install in development mode
-pip install -U .               # Install/upgrade package
+uv sync                         # Install dependencies in sync
+uv pip install -e .             # Install in development mode (alternative)
 ```
 
 ## Code Style

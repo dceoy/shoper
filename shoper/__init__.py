@@ -11,7 +11,7 @@ Example:
 
     >>> from shoper import ShellOperator
     >>> shell_op = ShellOperator(log_txt="commands.log", quiet=True)
-    >>> # shell_op.run("echo 'Hello World' > output.txt", output_files_or_dirs=["output.txt"])
+    >>> # shell_op.run("echo 'Hello World'")
 
 Attributes:
     __version__ (str): The version string of the package.
