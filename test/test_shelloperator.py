@@ -677,16 +677,15 @@ class TestShellOperatorCoverage:
             shell_op = ShellOperator(quiet=True)
 
             # Create a mock failed process
-            failed_proc = subprocess.CompletedProcess(
-                args=["false"], returncode=1, stdout="", stderr="Error"
-            )
+            failed_proc = MagicMock()
+            failed_proc.returncode = 1
 
             # Verify file exists before
             assert output_file.exists()
 
             # Should raise and clean up file
             with pytest.raises(subprocess.SubprocessError):
-                shell_op._validate_results(
+                shell_op._validate_results(  # pyright: ignore[reportPrivateUsage]
                     procs=[failed_proc],
                     output_files_or_dirs=[str(output_file)],
                     remove_if_failed=True,
@@ -705,16 +704,15 @@ class TestShellOperatorCoverage:
             shell_op = ShellOperator(quiet=True)
 
             # Create a successful process
-            success_proc = subprocess.CompletedProcess(
-                args=["true"], returncode=0, stdout="", stderr=""
-            )
+            success_proc = MagicMock()
+            success_proc.returncode = 0
 
             # Verify file exists before
             assert output_file.exists()
 
             # Should raise and clean up file due to validation failure
             with pytest.raises(RuntimeError):
-                shell_op._validate_results(
+                shell_op._validate_results(  # pyright: ignore[reportPrivateUsage]
                     procs=[success_proc],
                     output_files_or_dirs=[str(output_file)],
                     output_validator=lambda p: (
@@ -738,7 +736,7 @@ class TestShellOperatorCoverage:
             assert not log_file.exists()
 
             # Run async command
-            proc = shell_op._popen("echo 'test'", "[test] $ ")
+            proc = shell_op._popen("echo 'test'", "[test] $ ")  # pyright: ignore[reportPrivateUsage]
             proc.wait()
 
             # Log file should now exist with the command
@@ -757,7 +755,7 @@ class TestShellOperatorCoverage:
             assert not log_file.exists()
 
             # Run sync command
-            shell_op._shell_c("echo 'test'", "[test] $ ")
+            shell_op._shell_c("echo 'test'", "[test] $ ")  # pyright: ignore[reportPrivateUsage]
 
             # Log file should now exist with the command
             assert log_file.exists()
@@ -775,7 +773,7 @@ class TestShellOperatorCoverage:
             mock_stdout = mocker.patch("sys.stdout")
 
             # Run command that produces output
-            shell_op._shell_c("echo 'live output'", "[test] $ ")
+            shell_op._shell_c("echo 'live output'", "[test] $ ")  # pyright: ignore[reportPrivateUsage]
 
             # Verify stdout.write was called (for live output streaming)
             mock_stdout.write.assert_called()
@@ -797,7 +795,7 @@ class TestShellOperatorCoverage:
 
             # Should raise error and clean up found file
             with pytest.raises(FileNotFoundError):
-                shell_op._validate_outputs(
+                shell_op._validate_outputs(  # pyright: ignore[reportPrivateUsage]
                     files_or_dirs=[str(found_file), str(missing_file)],
                     remove_if_failed=True,
                 )
@@ -823,7 +821,7 @@ class TestShellOperatorCoverage:
 
             # Should raise error and clean up
             with pytest.raises(RuntimeError):
-                shell_op._validate_outputs(
+                shell_op._validate_outputs(  # pyright: ignore[reportPrivateUsage]
                     files_or_dirs=[str(output_file)],
                     func=validator,
                     remove_if_failed=True,
@@ -831,3 +829,86 @@ class TestShellOperatorCoverage:
 
             # File should be removed
             assert not output_file.exists()
+
+    @staticmethod
+    def test_subprocess_error_no_cleanup(mocker: MockerFixture) -> None:
+        """Test subprocess error handling without output file cleanup."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_file = Path(tmpdir) / "output.txt"
+            output_file.write_text("content")
+
+            shell_op = ShellOperator(quiet=True)
+
+            # Mock _shell_c to raise SubprocessError during execution
+            mock_shell_c = mocker.patch.object(shell_op, "_shell_c")
+            mock_shell_c.side_effect = subprocess.SubprocessError("Command failed")
+            mocker.patch.object(shell_op, "_args2list", return_value=["fake command"])
+
+            # Verify file exists before
+            assert output_file.exists()
+
+            # Run should fail but NOT clean up the file (remove_if_failed=False)
+            with pytest.raises(subprocess.SubprocessError):
+                shell_op.run(
+                    "fake command",
+                    output_files_or_dirs=[str(output_file)],
+                    remove_if_failed=False,
+                    asynchronous=False,
+                )
+
+            # File should still exist (not removed)
+            assert output_file.exists()
+
+    @staticmethod
+    def test_validate_results_process_failure_no_cleanup() -> None:
+        """Test _validate_results without cleanup when process fails."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_file = Path(tmpdir) / "output.txt"
+            output_file.write_text("test content")
+
+            shell_op = ShellOperator(quiet=True)
+
+            # Create a mock failed process
+            failed_proc = MagicMock()
+            failed_proc.returncode = 1
+
+            # Verify file exists before
+            assert output_file.exists()
+
+            # Should raise but NOT clean up file (remove_if_failed=False)
+            with pytest.raises(subprocess.SubprocessError):
+                shell_op._validate_results(  # pyright: ignore[reportPrivateUsage]
+                    procs=[failed_proc],
+                    output_files_or_dirs=[str(output_file)],
+                    remove_if_failed=False,
+                )
+
+            # File should still exist (not removed)
+            assert output_file.exists()
+
+    @staticmethod
+    def test_validate_outputs_custom_validator_failure_no_cleanup() -> None:
+        """Test _validate_outputs without cleanup when custom validator fails."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_file = Path(tmpdir) / "output.txt"
+            output_file.write_text("")  # Empty file
+
+            shell_op = ShellOperator()
+
+            # File exists but is empty
+            assert output_file.exists()
+
+            # Custom validator that checks file is not empty
+            def validator(path: str) -> bool:
+                return Path(path).stat().st_size > 0
+
+            # Should raise error but NOT clean up (remove_if_failed=False)
+            with pytest.raises(RuntimeError):
+                shell_op._validate_outputs(  # pyright: ignore[reportPrivateUsage]
+                    files_or_dirs=[str(output_file)],
+                    func=validator,
+                    remove_if_failed=False,
+                )
+
+            # File should still exist (not removed)
+            assert output_file.exists()
