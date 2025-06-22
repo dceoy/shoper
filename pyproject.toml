@@ -103,6 +103,7 @@ select = [
   "DOC"     # pydoclint (DOC)
 ]
 ignore = [
+  "COM812",   # missing-trailing-comma
   "FA100",    # future-rewritable-type-annotation
   "FBT001",   # boolean-type-hint-positional-argument
   "FBT002",   # boolean-default-value-positional-argument

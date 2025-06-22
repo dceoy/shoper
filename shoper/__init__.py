@@ -10,8 +10,8 @@ Example:
     Basic usage of ShellOperator:
 
     >>> from shoper import ShellOperator
-    >>> shell_op = ShellOperator(log_txt="commands.log")
-    >>> shell_op.run("echo 'Hello World'")
+    >>> shell_op = ShellOperator(log_txt="commands.log", quiet=True)
+    >>> # shell_op.run("echo 'Hello World' > output.txt", output_files_or_dirs=["output.txt"])
 
 Attributes:
     __version__ (str): The version string of the package.
@@ -19,6 +19,8 @@ Attributes:
 
 # pyright: reportUnusedImport=false
 
+from importlib.metadata import version
+
 from .shelloperator import ShellOperator  # noqa: F401
 
-__version__ = "v1.4.3"
+__version__ = version(__package__) if __package__ else None
