@@ -21,6 +21,8 @@ Attributes:
 
 from importlib.metadata import version
 
-from .shelloperator import ShellOperator  # noqa: F401
+from .shelloperator import ShellOperator
 
 __version__ = version(__package__) if __package__ else None
+
+__all__ = ["ShellOperator"]

@@ -1,6 +1,6 @@
 [project]
 name = "shoper"
-version = "1.4.3"
+version = "1.4.4"
 description = "Simple shell operator module"
 authors = [{name = "Daichi Narushima", email = "dceoy@users.noreply.github.com"}]
 maintainers = [{name = "Daichi Narushima", email = "dceoy@users.noreply.github.com"}]
