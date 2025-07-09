@@ -137,11 +137,7 @@ threads = 0
 [tool.pytest.ini_options]
 addopts = [
   "--cov=shoper",
-  "--cov-report=xml",
-  "--cov-report=html",
-  "--cov-report=term-missing",
   "--cov-branch",
-  "--junitxml=junit/test-results.xml",
   "--doctest-modules",
   "--capture=no",
   "--numprocesses=auto",
