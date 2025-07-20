@@ -2,9 +2,7 @@
 
 A robust Python module for executing shell commands with advanced features including input/output file tracking, asynchronous execution, logging, and validation.
 
-[![Test](https://github.com/dceoy/shoper/actions/workflows/test.yml/badge.svg)](https://github.com/dceoy/shoper/actions/workflows/test.yml)
-[![Upload Python Package](https://github.com/dceoy/shoper/actions/workflows/python-package-release-on-pypi-and-github.yml/badge.svg)](https://github.com/dceoy/shoper/actions/workflows/python-package-release-on-pypi-and-github.yml)
-[![Python Versions](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
+[![CI/CD](https://github.com/dceoy/shoper/actions/workflows/ci.yml/badge.svg)](https://github.com/dceoy/shoper/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
