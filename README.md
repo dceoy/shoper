@@ -71,7 +71,7 @@ sh = ShellOperator(log_txt='workflow.log')
 sh.run(
     args=[
         'echo ${RANDOM} | tee random0.txt',
-        'echo ${RANDOM} | tee random1.txt', 
+        'echo ${RANDOM} | tee random1.txt',
         'echo ${RANDOM} | tee random2.txt'
     ],
     output_files_or_dirs=['random0.txt', 'random1.txt', 'random2.txt']
@@ -159,9 +159,13 @@ Execute shell commands with extensive configuration options.
 - `args`: Command string or list of commands to execute
 - `input_files_or_dirs`: Files/directories that must exist before execution
 - `output_files_or_dirs`: Files/directories expected after execution
-- `asynchronous`: Execute command asynchronously (default: `False`)
-- `remove_previous_outputs`: Remove output files before execution
+- `output_validator`: Optional callable for custom output validation
 - `cwd`: Working directory for command execution
+- `prompt`: Custom prompt string for command logging
+- `asynchronous`: Execute command asynchronously (default: `False`)
+- `remove_if_failed`: Remove output files if command fails (default: `True`)
+- `remove_previous_outputs`: Remove output files before execution (default: `False`)
+- `skip_if_exist`: Skip execution if output files exist (default: `True`)
 - Additional subprocess parameters supported
 
 ### `wait()`
@@ -170,7 +174,7 @@ Wait for all asynchronous processes to complete.
 
 ## Requirements
 
-- Python 3.9 or higher
+- Python 3.10 or higher
 - POSIX-compatible operating system (Linux, macOS)
 - No external dependencies
 
@@ -191,13 +195,18 @@ pip install -e .
 ruff check .
 ruff check . --fix
 
-# Type checking  
+# Type checking
 pyright
 ```
 
 ### Testing
 
-Testing is performed via GitHub Actions with package installation and basic functionality verification.
+```bash
+# Run unit tests
+uv run pytest
+```
+
+Testing is performed via pytest with comprehensive unit tests and GitHub Actions for CI/CD.
 
 ## Contributing
 
@@ -209,7 +218,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-Daichi Narushima ([@dceoy](https://github.com/dceoy))
+Daichi Narushima, Ph.D. ([@dceoy](https://github.com/dceoy))
 
 ## Links
 
