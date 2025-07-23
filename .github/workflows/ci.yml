@@ -41,14 +41,12 @@ jobs:
       github.event_name == 'push'
       || github.event_name == 'pull_request'
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
       - name: Set up uv
         uses: astral-sh/setup-uv@7edac99f961f18b581bbd960d59d049f04c0002f  # v6.4.1
-        with:
-          python-version: ${{ inputs.python-version || '3.x' }}
       - name: Install the package
         run: >
           uv sync
