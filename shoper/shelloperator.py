@@ -14,7 +14,7 @@ Example:
         >>> # shell_op.run("echo 'Hello'")
 """
 
-# pyright: reportArgumentType=false
+from __future__ import annotations
 
 import logging
 import os
@@ -25,7 +25,10 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from pprint import pformat
-from typing import Any, Callable, Optional, Union
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +61,7 @@ class ShellOperator:
             >>> # shell_op.wait()  # Wait for completion
     """
 
-    log_txt: Optional[Union[str, Path]] = None
+    log_txt: str | Path | None = None
     quiet: bool = False
     clear_log_txt: bool = False
     logger: logging.Logger = logger
@@ -77,7 +80,7 @@ class ShellOperator:
             - Initializes empty process list for asynchronous operations
             - Clears log file if clear_log_txt is True and log_txt is set
         """
-        self.__log_txt: Optional[Path] = (
+        self.__log_txt: Path | None = (
             Path(self.log_txt) if isinstance(self.log_txt, str) else self.log_txt
         )
         self.__open_proc_list: list[dict[str, Any]] = []
@@ -86,7 +89,7 @@ class ShellOperator:
 
     def _remove_files_or_dirs(
         self,
-        paths: Union[str, Path, list[Union[str, Path]], None],
+        paths: str | Path | list[str | Path] | None,
     ) -> None:
         """Remove files or directories from the filesystem.
 
@@ -113,15 +116,15 @@ class ShellOperator:
 
     def run(
         self,
-        args: Union[str, list[str], Path, list[Path]],
-        input_files_or_dirs: Optional[Union[str, Path, list[Union[str, Path]]]] = None,
-        output_files_or_dirs: Optional[Union[str, Path, list[Union[str, Path]]]] = None,
-        output_validator: Optional[Callable[[str], bool]] = None,
-        cwd: Optional[Union[str, Path]] = None,
-        prompt: Optional[str] = None,
+        args: str | list[str] | Path | list[Path],
+        input_files_or_dirs: str | Path | list[str | Path] | None = None,
+        output_files_or_dirs: str | Path | list[str | Path] | None = None,
+        output_validator: Callable[[str], bool] | None = None,
+        cwd: str | Path | None = None,
+        prompt: str | None = None,
         asynchronous: bool = False,
         remove_if_failed: bool = True,
-        remove_previous: bool = False,
+        remove_previous_outputs: bool = False,
         skip_if_exist: bool = True,
         **popen_kwargs: Any,  # noqa: ANN401
     ) -> None:
@@ -149,7 +152,7 @@ class ShellOperator:
                 for completion. Use wait() method to wait for completion.
             remove_if_failed: If True, removes output files/directories when
                 command execution fails or validation fails.
-            remove_previous: If True, removes existing output files/directories
+            remove_previous_outputs: If True, removes existing output files/directories
                 before command execution.
             skip_if_exist: If True, skips command execution if all output
                 files/directories already exist.
@@ -194,27 +197,36 @@ class ShellOperator:
         elif output_files_or_dirs and all(output_found.values()) and skip_if_exist:
             self.logger.debug("args skipped: %s", args)
         else:
-            if remove_previous:
+            if remove_previous_outputs:
                 self._remove_files_or_dirs(output_files_or_dirs)
-            common_kwargs = {
-                "prompt": (prompt or f"[{cwd or Path.cwd()}] $ "),
-                "cwd": (str(cwd) if cwd else None),
-                **popen_kwargs,
-            }
+            prompt_str: str = (
+                prompt if prompt is not None else f"[{cwd or Path.cwd()}] $ "
+            )
+            cwd_str: str | None = str(cwd) if cwd else None
             if asynchronous:
                 self.__open_proc_list.append({
                     "output_files_or_dirs": output_files_or_dirs,
                     "output_validator": output_validator,
                     "remove_if_failed": remove_if_failed,
                     "procs": [
-                        self._popen(arg=a, **common_kwargs)
+                        self._popen(
+                            arg=a,
+                            prompt=prompt_str,
+                            cwd=cwd_str,
+                            **popen_kwargs,
+                        )
                         for a in self._args2list(args)
                     ],
                 })
             else:
                 try:
                     procs = [
-                        self._shell_c(arg=a, **common_kwargs)
+                        self._shell_c(
+                            arg=a,
+                            prompt=prompt_str,
+                            cwd=cwd_str,
+                            **popen_kwargs,
+                        )
                         for a in self._args2list(args)
                     ]
                 except subprocess.SubprocessError:
@@ -333,7 +345,7 @@ class ShellOperator:
         self,
         arg: str,
         prompt: str,
-        cwd: Optional[str] = None,
+        cwd: str | None = None,
         **popen_kwargs: Any,  # noqa: ANN401
     ) -> subprocess.Popen[Any]:
         """Execute a command asynchronously using subprocess.Popen.
@@ -399,7 +411,7 @@ class ShellOperator:
         self,
         arg: str,
         prompt: str,
-        cwd: Optional[str] = None,
+        cwd: str | None = None,
         **popen_kwargs: Any,  # noqa: ANN401
     ) -> subprocess.Popen[Any]:
         """Execute a command synchronously with real-time output handling.
@@ -511,8 +523,8 @@ class ShellOperator:
     def _validate_results(
         self,
         procs: list[subprocess.Popen[Any]],
-        output_files_or_dirs: Optional[Union[str, Path, list[Union[str, Path]]]] = None,
-        output_validator: Optional[Callable[[str], bool]] = None,
+        output_files_or_dirs: str | Path | list[str | Path] | None = None,
+        output_validator: Callable[[str], bool] | None = None,
         remove_if_failed: bool = True,
     ) -> None:
         """Validate command execution results and output files.
@@ -569,8 +581,8 @@ class ShellOperator:
 
     def _validate_outputs(
         self,
-        files_or_dirs: Union[str, Path, list[Union[str, Path]]],
-        func: Optional[Callable[[str], bool]] = None,
+        files_or_dirs: str | Path | list[str | Path],
+        func: Callable[[str], bool] | None = None,
         remove_if_failed: bool = True,
     ) -> None:
         """Validate the existence and quality of output files or directories.
@@ -615,15 +627,15 @@ class ShellOperator:
         f_not_found = f_all.difference(f_found)
         if f_not_found:
             if remove_if_failed and f_found:
-                self._remove_files_or_dirs(f_found)
+                self._remove_files_or_dirs(list(f_found))
             error_message = f"output not found: {f_not_found}"
             raise FileNotFoundError(error_message)
         elif func:
             f_validated = {p for p in f_found if func(p)}
-            f_not_validated = set(f_found).difference(f_validated)
+            f_not_validated = f_found.difference(f_validated)
             if f_not_validated:
                 if remove_if_failed:
-                    self._remove_files_or_dirs(f_found)
+                    self._remove_files_or_dirs(list(f_found))
                 error_message = f"output not validated with {func}: {f_not_validated}"
                 raise RuntimeError(error_message)
             else:
