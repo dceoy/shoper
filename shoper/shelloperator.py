@@ -632,7 +632,7 @@ class ShellOperator:
             raise FileNotFoundError(error_message)
         elif func:
             f_validated = {p for p in f_found if func(p)}
-            f_not_validated = set(f_found).difference(f_validated)
+            f_not_validated = f_found.difference(f_validated)
             if f_not_validated:
                 if remove_if_failed:
                     self._remove_files_or_dirs(list(f_found))
