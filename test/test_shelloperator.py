@@ -229,7 +229,7 @@ class TestShellOperatorRun:
         shell_op.run(
             "echo test",
             output_files_or_dirs=["output.txt"],
-            remove_previous=True,
+            remove_previous_outputs=True,
         )
 
         mock_remove.assert_called_once_with(["output.txt"])
