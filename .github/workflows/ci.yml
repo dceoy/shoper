@@ -27,6 +27,8 @@ jobs:
       github.event_name == 'push'
       || github.event_name == 'pull_request'
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+    permissions:
+      contents: read
     uses: dceoy/gh-actions-for-devops/.github/workflows/python-package-lint-and-scan.yml@main
     with:
       package-path: .
@@ -35,9 +37,28 @@ jobs:
       github.event_name == 'push'
       || github.event_name == 'pull_request'
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+    permissions:
+      contents: read
     uses: dceoy/gh-actions-for-devops/.github/workflows/python-package-test.yml@main
     with:
       package-path: .
+  python-package-release:
+    if: >
+      github.event_name == 'push'
+      || (
+        github.event_name == 'workflow_dispatch'
+        && (inputs.workflow == 'release' || inputs.workflow == 'lint-and-test')
+      )
+    permissions:
+      contents: write
+      id-token: write
+    uses: dceoy/gh-actions-for-devops/.github/workflows/python-package-release-on-pypi-and-github.yml@main
+    with:
+      package-path: .
+      create-releases: ${{ github.event_name == 'workflow_dispatch' && inputs.workflow == 'release' }}
+    secrets:
+      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   dependabot-auto-merge:
     if: >
       github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
@@ -51,20 +72,3 @@ jobs:
       actions: read
     with:
       unconditional: true
-  python-package-release:
-    if: >
-      github.event_name == 'push'
-      || (
-        github.event_name == 'workflow_dispatch'
-        && (inputs.workflow == 'release' || inputs.workflow == 'lint-and-test')
-      )
-    uses: dceoy/gh-actions-for-devops/.github/workflows/python-package-release-on-pypi-and-github.yml@main
-    permissions:
-      contents: write
-      id-token: write
-    with:
-      package-path: .
-      create-releases: ${{ github.event_name == 'workflow_dispatch' && inputs.workflow == 'release' }}
-    secrets:
-      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
