@@ -141,13 +141,13 @@ except Exception as e:
 
 The `ShellOperator` class supports the following configuration parameters:
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `log_txt` | `str`, `Path` or `None` | `None` | Path to log file for command output |
-| `quiet` | `bool` | `False` | Suppress command output to stdout |
-| `clear_log_txt` | `bool` | `False` | Clear log file on initialization |
-| `print_command` | `bool` | `True` | Print commands before execution |
-| `executable` | `str` | `/bin/bash` | Shell executable to use |
+| Parameter       | Type                    | Default     | Description                         |
+| --------------- | ----------------------- | ----------- | ----------------------------------- |
+| `log_txt`       | `str`, `Path` or `None` | `None`      | Path to log file for command output |
+| `quiet`         | `bool`                  | `False`     | Suppress command output to stdout   |
+| `clear_log_txt` | `bool`                  | `False`     | Clear log file on initialization    |
+| `print_command` | `bool`                  | `True`      | Print commands before execution     |
+| `executable`    | `str`                   | `/bin/bash` | Shell executable to use             |
 
 ## Method Reference
 
@@ -156,6 +156,7 @@ The `ShellOperator` class supports the following configuration parameters:
 Execute shell commands with extensive configuration options.
 
 **Parameters:**
+
 - `args`: Command string or list of commands to execute
 - `input_files_or_dirs`: Files/directories that must exist before execution
 - `output_files_or_dirs`: Files/directories expected after execution
