@@ -21,8 +21,8 @@ classifiers = [
 [project.urls]
 Repository = "https://github.com/dceoy/shoper.git"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
   "ruff >=0.14.0,<0.15.0",
   "pyright >= 1.1.379",
   "pytest >= 8.3.2",
