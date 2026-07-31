@@ -29,7 +29,7 @@ jobs:
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
-    uses: dceoy/gh-actions-for-devops/.github/workflows/python-package-lint-and-scan.yml@main
+    uses: dceoy/gha-for-devops/.github/workflows/python-package-lint-and-scan.yml@main
     with:
       package-path: .
   python-test:
@@ -39,7 +39,7 @@ jobs:
       || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
     permissions:
       contents: read
-    uses: dceoy/gh-actions-for-devops/.github/workflows/python-package-test.yml@main
+    uses: dceoy/gha-for-devops/.github/workflows/python-package-test.yml@main
     with:
       package-path: .
   python-package-release:
@@ -52,7 +52,7 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: dceoy/gh-actions-for-devops/.github/workflows/python-package-release-on-pypi-and-github.yml@main
+    uses: dceoy/gha-for-devops/.github/workflows/python-package-release-on-pypi-and-github.yml@main
     with:
       package-path: .
       create-releases: ${{ github.event_name == 'workflow_dispatch' && inputs.workflow == 'release' }}
@@ -65,7 +65,7 @@ jobs:
     needs:
       - python-lint-and-scan
       - python-test
-    uses: dceoy/gh-actions-for-devops/.github/workflows/dependabot-auto-merge.yml@main
+    uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@main
     permissions:
       contents: write
       pull-requests: write
