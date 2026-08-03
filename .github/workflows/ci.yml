@@ -8,15 +8,6 @@ on:
     branches:
       - master
   workflow_dispatch:
-    inputs:
-      workflow:
-        required: true
-        type: choice
-        options:
-          - lint-and-test
-          - release
-        description: Choose the workflow to run
-        default: lint-and-test
 defaults:
   run:
     shell: bash -euo pipefail {0}
@@ -26,46 +17,29 @@ jobs:
     if: >
       github.event_name == 'push'
       || github.event_name == 'pull_request'
-      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+      || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
-    uses: dceoy/gha-for-devops/.github/workflows/python-package-lint-and-scan.yml@main
+    uses: dceoy/gha-for-devops/.github/workflows/python-package-lint-and-scan.yml@main  # zizmor: ignore[unpinned-uses]
     with:
       package-path: .
   python-test:
     if: >
       github.event_name == 'push'
       || github.event_name == 'pull_request'
-      || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-test')
+      || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
-    uses: dceoy/gha-for-devops/.github/workflows/python-package-test.yml@main
+    uses: dceoy/gha-for-devops/.github/workflows/python-package-test.yml@main   # zizmor: ignore[unpinned-uses]
     with:
       package-path: .
-  python-package-release:
-    if: >
-      github.event_name == 'push'
-      || (
-        github.event_name == 'workflow_dispatch'
-        && (inputs.workflow == 'release' || inputs.workflow == 'lint-and-test')
-      )
-    permissions:
-      contents: write
-      id-token: write
-    uses: dceoy/gha-for-devops/.github/workflows/python-package-release-on-pypi-and-github.yml@main
-    with:
-      package-path: .
-      create-releases: ${{ github.event_name == 'workflow_dispatch' && inputs.workflow == 'release' }}
-    secrets:
-      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   dependabot-auto-merge:
     if: >
       github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
     needs:
       - python-lint-and-scan
       - python-test
-    uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@main
+    uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@main   # zizmor: ignore[unpinned-uses]
     permissions:
       contents: write
       pull-requests: write
