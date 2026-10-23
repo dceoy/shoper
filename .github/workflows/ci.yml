@@ -8,6 +8,8 @@ on:
     branches:
       - master
   workflow_dispatch:
+permissions:
+  contents: read
 defaults:
   run:
     shell: bash -euo pipefail {0}
