@@ -1,7 +1,7 @@
 """Unit tests for ShellOperator class using pytest and pytest-mock."""
 
 import logging
-import subprocess  # noqa: S404
+import subprocess  # ruff: ignore[suspicious-subprocess-import]
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -537,7 +537,7 @@ class TestShellOperatorValidation:
         mocker.patch.object(shell_op, "_args2list", return_value=["output.txt"])
         mock_logger = mocker.patch.object(shell_op, "logger")
 
-        def validator(p: str) -> bool:  # noqa: ARG001
+        def validator(p: str) -> bool:  # ruff: ignore[unused-function-argument]
             return True
 
         shell_op._validate_outputs(["output.txt"], func=validator)  # pyright: ignore[reportPrivateUsage]
@@ -556,7 +556,7 @@ class TestShellOperatorValidation:
         mocker.patch.object(shell_op, "_args2list", return_value=["output.txt"])
         mock_remove = mocker.patch.object(shell_op, "_remove_files_or_dirs")
 
-        def validator(p: str) -> bool:  # noqa: ARG001
+        def validator(p: str) -> bool:  # ruff: ignore[unused-function-argument]
             return False
 
         with pytest.raises(RuntimeError) as exc_info:
@@ -773,7 +773,7 @@ class TestShellOperatorCoverage:
             mock_stdout = mocker.patch("sys.stdout")
 
             # Run command that produces output
-            shell_op._shell_c("echo 'live output'", "[test] $ ")  # pyright: ignore[reportPrivateUsage]
+            shell_op._shell_c("sleep 1 && echo 'live output'", "[test] $ ")  # pyright: ignore[reportPrivateUsage]
 
             # Verify stdout.write was called (for live output streaming)
             mock_stdout.write.assert_called()

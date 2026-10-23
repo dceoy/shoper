@@ -41,10 +41,10 @@ select = ["ALL"]
 ignore = [
   "CPY",  # flake8-copyright (CPY)
   "RET",  # flake8-return (RET)
-  "COM812",   # missing-trailing-comma
-  "FA100",    # future-rewritable-type-annotation
-  "FBT001",   # boolean-type-hint-positional-argument
-  "FBT002",   # boolean-default-value-positional-argument
+  "missing-trailing-comma",
+  "future-rewritable-type-annotation",
+  "boolean-type-hint-positional-argument",
+  "boolean-default-value-positional-argument",
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -55,16 +55,16 @@ max-args = 10
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [
-  "D104",     # undocumented-public-package
+  "undocumented-public-package",
 ]
 "test/**.py" = [
-  "D101",     # undocumented-public-class
-  "D102",     # undocumented-public-method
-  "D103",     # undocumented-public-function
-  "S101",     # assert
-  "S104",     # hardcoded-bind-all-interfaces
-  "PLC2701",  # import-private-name
-  "SLF001",   # private-member-access
+  "undocumented-public-class",
+  "undocumented-public-method",
+  "undocumented-public-function",
+  "assert",
+  "hardcoded-bind-all-interfaces",
+  "import-private-name",
+  "private-member-access",
 ]
 
 [tool.pyright]

@@ -30,7 +30,7 @@ from shoper import ShellOperator
 
 # Simple command execution
 sh = ShellOperator()
-sh.run('ls -la')
+sh.run("ls -la")
 ```
 
 ### With Logging
@@ -39,7 +39,7 @@ sh.run('ls -la')
 from shoper import ShellOperator
 
 # Execute commands with logging
-sh = ShellOperator(log_txt='commands.log', quiet=False)
+sh = ShellOperator(log_txt="commands.log", quiet=False)
 sh.run('echo "Hello World"')
 ```
 
@@ -52,9 +52,9 @@ sh = ShellOperator()
 
 # Validate input files exist and output files are created
 sh.run(
-    args='sort input.txt > output.txt',
-    input_files_or_dirs=['input.txt'],
-    output_files_or_dirs=['output.txt']
+    args="sort input.txt > output.txt",
+    input_files_or_dirs=["input.txt"],
+    output_files_or_dirs=["output.txt"],
 )
 ```
 
@@ -65,23 +65,23 @@ sh.run(
 ```python
 from shoper import ShellOperator
 
-sh = ShellOperator(log_txt='workflow.log')
+sh = ShellOperator(log_txt="workflow.log")
 
 # Generate random numbers
 sh.run(
     args=[
-        'echo ${RANDOM} | tee random0.txt',
-        'echo ${RANDOM} | tee random1.txt',
-        'echo ${RANDOM} | tee random2.txt'
+        "echo ${RANDOM} | tee random0.txt",
+        "echo ${RANDOM} | tee random1.txt",
+        "echo ${RANDOM} | tee random2.txt",
     ],
-    output_files_or_dirs=['random0.txt', 'random1.txt', 'random2.txt']
+    output_files_or_dirs=["random0.txt", "random1.txt", "random2.txt"],
 )
 
 # Sort the generated numbers
 sh.run(
-    args='sort random[012].txt | tee sorted.txt',
-    input_files_or_dirs=['random0.txt', 'random1.txt', 'random2.txt'],
-    output_files_or_dirs='sorted.txt'
+    args="sort random[012].txt | tee sorted.txt",
+    input_files_or_dirs=["random0.txt", "random1.txt", "random2.txt"],
+    output_files_or_dirs="sorted.txt",
 )
 ```
 
@@ -109,14 +109,14 @@ from shoper import ShellOperator
 
 # Advanced configuration
 sh = ShellOperator(
-    log_txt='detailed.log',
-    quiet=True,                    # Suppress command output
-    print_command=False,           # Don't print commands before execution
-    executable='/bin/zsh',         # Use zsh instead of bash
-    clear_log_txt=True            # Clear log file on initialization
+    log_txt="detailed.log",
+    quiet=True,  # Suppress command output
+    print_command=False,  # Don't print commands before execution
+    executable="/bin/zsh",  # Use zsh instead of bash
+    clear_log_txt=True,  # Clear log file on initialization
 )
 
-sh.run('complex_command --with-args')
+sh.run("complex_command --with-args")
 ```
 
 ### Error Handling and Validation
@@ -128,10 +128,10 @@ sh = ShellOperator()
 
 try:
     sh.run(
-        args='process_data input.csv',
-        input_files_or_dirs=['input.csv'],
-        output_files_or_dirs=['output.csv'],
-        remove_previous_outputs=True  # Clean up before execution
+        args="process_data input.csv",
+        input_files_or_dirs=["input.csv"],
+        output_files_or_dirs=["output.csv"],
+        remove_previous_outputs=True,  # Clean up before execution
     )
 except Exception as e:
     print(f"Command failed: {e}")

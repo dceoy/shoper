@@ -19,7 +19,7 @@ from __future__ import annotations
 import logging
 import os
 import shutil
-import subprocess  # noqa: S404
+import subprocess  # ruff: ignore[suspicious-subprocess-import]
 import sys
 import time
 from dataclasses import dataclass
@@ -126,7 +126,7 @@ class ShellOperator:
         remove_if_failed: bool = True,
         remove_previous_outputs: bool = False,
         skip_if_exist: bool = True,
-        **popen_kwargs: Any,  # noqa: ANN401
+        **popen_kwargs: Any,  # ruff: ignore[any-type]
     ) -> None:
         """Execute shell commands with comprehensive validation and error handling.
 
@@ -174,6 +174,8 @@ class ShellOperator:
             >>> # )
 
         Note:
+            - Command strings are executed by the configured shell. Pass only
+              trusted commands, and quote untrusted values before interpolation.
             - Commands are executed in the order provided
             - Input validation occurs before any command execution
             - Output validation occurs after all commands complete
@@ -280,7 +282,7 @@ class ShellOperator:
         else:
             self.logger.debug("There is no process.")
 
-    def _args2pathlist(self, args: Any) -> list[Path]:  # noqa: ANN401
+    def _args2pathlist(self, args: Any) -> list[Path]:  # ruff: ignore[any-type]
         """Convert various argument types to a list of Path objects.
 
         This utility method normalizes different input types (strings, Path objects,
@@ -307,7 +309,7 @@ class ShellOperator:
         return [Path(str(a)) for a in self._args2list(args=args)]
 
     @staticmethod
-    def _args2list(args: Any) -> list[Any]:  # noqa: ANN401
+    def _args2list(args: Any) -> list[Any]:  # ruff: ignore[any-type]
         """Convert various argument types to a list.
 
         This static utility method normalizes different input types into a
@@ -346,7 +348,7 @@ class ShellOperator:
         arg: str,
         prompt: str,
         cwd: str | None = None,
-        **popen_kwargs: Any,  # noqa: ANN401
+        **popen_kwargs: Any,  # ruff: ignore[any-type]
     ) -> subprocess.Popen[Any]:
         """Execute a command asynchronously using subprocess.Popen.
 
@@ -392,16 +394,28 @@ class ShellOperator:
                 with Path(self.__log_txt).open(mode="a", encoding="utf-8") as f:
                     f.write(os.linesep + command_line + os.linesep)
             else:
-                with Path(self.__log_txt).open(mode="w", encoding="utf-8") as f:
-                    f.write(command_line + os.linesep)
-            fo = Path(self.__log_txt).open(mode="a", encoding="utf-8")  # noqa: SIM115
+                Path(self.__log_txt).write_text(
+                    command_line + os.linesep,
+                    encoding="utf-8",
+                )
+            fo = Path(self.__log_txt).open(  # ruff: ignore[open-file-with-context-handler]
+                mode="a",
+                encoding="utf-8",
+            )
         else:
-            fo = Path("/dev/null").open(mode="w", encoding="utf-8")  # noqa: SIM115
+            fo = Path("/dev/null").open(  # ruff: ignore[open-file-with-context-handler]
+                mode="w",
+                encoding="utf-8",
+            )
+        # Intentional: ShellOperator executes caller-provided shell syntax.
+        # ruff: ignore[subprocess-popen-with-shell-equals-true]
         return subprocess.Popen(
             args=arg,
             executable=self.executable,
             stdout=fo,
             stderr=fo,
+            # ruff: ignore[commented-out-code,line-too-long]
+            # nosemgrep: python.lang.security.audit.subprocess-shell-true.subprocess-shell-true
             shell=True,
             cwd=cwd,
             **popen_kwargs,
@@ -412,7 +426,7 @@ class ShellOperator:
         arg: str,
         prompt: str,
         cwd: str | None = None,
-        **popen_kwargs: Any,  # noqa: ANN401
+        **popen_kwargs: Any,  # ruff: ignore[any-type]
     ) -> subprocess.Popen[Any]:
         """Execute a command synchronously with real-time output handling.
 
@@ -460,23 +474,38 @@ class ShellOperator:
                 with Path(self.__log_txt).open(mode="a", encoding="utf-8") as f:
                     f.write(os.linesep + command_line + os.linesep)
             else:
-                with Path(self.__log_txt).open(mode="w", encoding="utf-8") as f:
-                    f.write(command_line + os.linesep)
-            fw = Path(self.__log_txt).open(mode="a", encoding="utf-8")  # noqa: SIM115
+                Path(self.__log_txt).write_text(
+                    command_line + os.linesep,
+                    encoding="utf-8",
+                )
+            fw = Path(self.__log_txt).open(  # ruff: ignore[open-file-with-context-handler]
+                mode="a",
+                encoding="utf-8",
+            )
         elif self.quiet:
-            fw = Path("/dev/null").open(mode="w", encoding="utf-8")  # noqa: SIM115
+            fw = Path("/dev/null").open(  # ruff: ignore[open-file-with-context-handler]
+                mode="w",
+                encoding="utf-8",
+            )
         else:
             fw = None
         if self.__log_txt and not self.quiet:
-            fr = Path(self.__log_txt).open(mode="r", encoding="utf-8")  # noqa: SIM115
+            fr = Path(self.__log_txt).open(  # ruff: ignore[open-file-with-context-handler]
+                mode="r",
+                encoding="utf-8",
+            )
             fr.read()
         else:
             fr = None
+        # Intentional: ShellOperator executes caller-provided shell syntax.
+        # ruff: ignore[subprocess-popen-with-shell-equals-true]
         p = subprocess.Popen(
             args=arg,
             executable=self.executable,
             stdout=fw,
             stderr=fw,
+            # ruff: ignore[commented-out-code,line-too-long]
+            # nosemgrep: python.lang.security.audit.subprocess-shell-true.subprocess-shell-true
             shell=True,
             cwd=cwd,
             **popen_kwargs,
@@ -518,7 +547,7 @@ class ShellOperator:
         """
         self.logger.info(strings)
         if stdout:
-            print(strings, flush=True)  # noqa: T201
+            print(strings, flush=True)  # ruff: ignore[print]
 
     def _validate_results(
         self,
