@@ -6,7 +6,6 @@ on:
       - master
     types:
       - opened
-      - synchronize
       - ready_for_review
 permissions:
   contents: read
