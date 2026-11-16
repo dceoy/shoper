@@ -448,7 +448,7 @@ wheels = [
 
 [[package]]
 name = "shoper"
-version = "1.4.4"
+version = "1.4.5"
 source = { editable = "." }
 
 [package.dev-dependencies]
