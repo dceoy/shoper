@@ -23,6 +23,7 @@ Repository = "https://github.com/dceoy/shoper.git"
 
 [dependency-groups]
 dev = [
+  "semgrep >= 1.186.0",
   "ruff >=0.17.0,<0.18.0",
   "pyright >= 1.1.379",
   "pytest >= 8.3.2",
