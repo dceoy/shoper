@@ -23,6 +23,7 @@ Repository = "https://github.com/dceoy/shoper.git"
 
 [dependency-groups]
 dev = [
+  "semgrep >= 1.186.0; python_version >= '3.11'",
   "ruff >=0.17.0,<0.18.0",
   "pyright >= 1.1.379",
   "pytest >= 8.3.2",
@@ -102,3 +103,15 @@ build-backend = "hatchling.build"
 
 [tool.uv]
 exclude-newer = "1 day"
+exclude-newer-package = { mcp = false, opentelemetry-api = false, opentelemetry-sdk = false, opentelemetry-exporter-otlp-proto-http = false, opentelemetry-instrumentation = false, opentelemetry-instrumentation-requests = false, opentelemetry-instrumentation-threading = false, opentelemetry-semantic-conventions = false, wcmatch = false }
+override-dependencies = [
+  "mcp==1.30.0",
+  "opentelemetry-api==1.45.2",
+  "opentelemetry-sdk==1.45.2",
+  "opentelemetry-exporter-otlp-proto-http==1.45.2",
+  "opentelemetry-instrumentation==0.66b2",
+  "opentelemetry-instrumentation-requests==0.66b2",
+  "opentelemetry-instrumentation-threading==0.66b2",
+  "opentelemetry-semantic-conventions==0.66b2",
+  "wcmatch==11.2",
+]
