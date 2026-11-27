@@ -23,7 +23,7 @@ jobs:
       issues: write
       id-token: write
       actions: read
-    uses: dceoy/pr-loop/.github/workflows/claude-code-review.yml@955b1a39a0b0f7ebc0483d638e1fa72752e85e80  # v1.1.7
+    uses: dceoy/pr-loop/.github/workflows/claude-code-review.yml@d11d9767879dcc2b34c678da3408ec9962b6df42  # v1.1.8
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}  # zizmor: ignore[secrets-outside-env]
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
